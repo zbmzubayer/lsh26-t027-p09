@@ -2,8 +2,10 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { Account, type AccountUser } from "@/components/account/account";
 import { LogoutButton } from "@/components/auth/logout-button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import type { WorkshopUser } from "@/lib/auth";
 import { analyse } from "@/lib/due-book-view";
 import {
   type CallSort,
@@ -30,7 +32,8 @@ type View =
   | "vehicle"
   | "search"
   | "workload"
-  | "reminders";
+  | "reminders"
+  | "account";
 
 const TABS: [View, string][] = [
   ["call", "Call list"],
@@ -38,6 +41,7 @@ const TABS: [View, string][] = [
   ["search", "Search"],
   ["workload", "Workload"],
   ["reminders", "Reminders"],
+  ["account", "Account"],
 ];
 
 async function json<T>(url: string, init?: RequestInit): Promise<T> {
@@ -49,9 +53,12 @@ async function json<T>(url: string, init?: RequestInit): Promise<T> {
 
 export function DueBook({
   user,
+  staff,
   caseId,
 }: {
-  user: { name: string; email: string };
+  user: AccountUser;
+  /** Null unless this account manages the workshop — the list is absent, not hidden. */
+  staff: WorkshopUser[] | null;
   /** The workshop this account works out of, resolved on the server. */
   caseId: string;
 }) {
@@ -449,7 +456,9 @@ export function DueBook({
               Could not load {caseId}: {(kase.error as Error).message}
             </div>
           )}
-          {!a && !kase.isError && (
+          {/* the only view that needs no case data, so it renders while the book loads */}
+          {view === "account" && <Account user={user} staff={staff} />}
+          {!a && !kase.isError && view !== "account" && (
             <p style={{ color: "var(--ink-3)", padding: "40px 0" }}>
               Loading {caseId}…
             </p>

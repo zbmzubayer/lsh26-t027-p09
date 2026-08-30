@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { DueBook } from "@/components/due-book/due-book";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, listWorkshopUsers } from "@/lib/auth";
 
 export default async function DashboardPage() {
   // proxy.ts already gates /dashboard; this is what makes `user` non-null here
@@ -29,9 +29,22 @@ export default async function DashboardPage() {
       </div>
     );
 
+  // Loaded here rather than in the client: a manager gets the list, everyone
+  // else gets null and the panel does not render at all. The action checks the
+  // role again on the server — this only decides what is worth sending.
+  const staff =
+    user.role === "manager" ? await listWorkshopUsers(user.caseId) : null;
+
   return (
     <DueBook
-      user={{ name: user.name, email: user.email }}
+      user={{
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        caseId: user.caseId,
+        createdAt: user.createdAt,
+      }}
+      staff={staff}
       caseId={user.caseId}
     />
   );

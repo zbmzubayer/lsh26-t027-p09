@@ -15,15 +15,28 @@ datasource db {
 // An account with no workshop gets told so rather than being defaulted into
 // someone else's book.
 model User {
-  id           String   @id @default(uuid(7)) @db.Uuid
-  name         String
-  email        String   @unique
-  passwordHash String
-  caseId       String?
-  createdAt    DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt    DateTime @updatedAt @db.Timestamptz(6)
+  id                String    @id @default(uuid(7)) @db.Uuid
+  name              String
+  email             String    @unique
+  passwordHash      String
+  caseId            String?
+  role              StaffRole @default(staff)
+  /// Set on every password change. A session issued before it stops working,
+  /// so changing a password ends every other session that knew the old one.
+  /// Null on accounts that have never changed theirs.
+  passwordChangedAt DateTime? @db.Timestamptz(6)
+  createdAt         DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt         DateTime  @updatedAt @db.Timestamptz(6)
 
   case Case? @relation(fields: [caseId], references: [id], onDelete: SetNull)
+}
+
+/// Workshop staff, not customers. `Owner` in this schema is the customer whose
+/// car it is, so the workshop's boss is a `manager` — naming this role "owner"
+/// would collide with the model that means the opposite thing.
+enum StaffRole {
+  manager
+  staff
 }
 
 /// Every date is a plain ISO string ("2026-08-30"), never DateTime: `today` is a
@@ -64,7 +77,7 @@ model Vehicle {
   model   String
   plate   String
 
-  owner            Owner              @relation(fields: [caseId, ownerId], references: [caseId, id], onDelete: Cascade)
+  owner            Owner             @relation(fields: [caseId, ownerId], references: [caseId, id], onDelete: Cascade)
   odometerReadings OdometerReading[]
   serviceItems     ServiceItem[]
   serviceRecords   ServiceRecord[]
