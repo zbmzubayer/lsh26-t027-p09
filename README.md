@@ -2,6 +2,8 @@
 
 **The cars that are due, in the order to ring them.**
 
+**Live: <https://lsh26-t027-p09.vercel.app/>**
+
 A service due predictor for a car servicing workshop in Dhaka. It works out what
 is due on every vehicle from that vehicle's own paperwork and its own odometer,
 ranks who to call today by the money at risk, and records the work when it is
@@ -95,11 +97,15 @@ fixture the self-check asserts against.
 ### Answer a case with no browser and no database
 
 `POST /api/run` is stateless and unauthenticated: a whole case in, answers out.
+It works against the deployment or a local server.
 
 ```bash
-curl -X POST http://localhost:3000/api/run \
+curl -X POST https://lsh26-t027-p09.vercel.app/api/run \
   -H 'content-type: application/json' -d @src/data/case-pub-01.json
 ```
+
+That returns the pinned answers — 42 vehicles, 41 call-list rows, V28 top at
+117,690, backlog 45 jobs / ৳387,700 — the same ones `engine-check.ts` asserts.
 
 The same answers, offline:
 

@@ -103,6 +103,13 @@ npx tsx src/lib/engine-check.ts    # block 3 re-asserts PUB-01 from the database
 
 ## Deployment
 
+Live at **<https://lsh26-t027-p09.vercel.app/>** (Vercel).
+
+Verified against that deployment: `POST /api/run` with `src/data/case-pub-01.json`
+returns the pinned answers — 42 vehicles, 41 call-list rows, V28 top at 117,690,
+backlog 45 jobs / ৳387,700 — identical to what `engine-check.ts` asserts
+offline. `/dashboard` redirects to `/login` without a session.
+
 The app deploys as a normal Next.js application. Two things to get right:
 
 1. **Leave `ML_URL` unset in production.** The prediction service runs on a

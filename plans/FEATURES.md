@@ -86,29 +86,35 @@ _Scored item 4 — every item with next due date and cost; record a service, tha
 
 ### A2 · Beyond the brief
 
-| #     | Feature                                                          | Why it earns its place                                                  | Status |
-| ----- | ---------------------------------------------------------------- | ----------------------------------------------------------------------- | ------ |
-| A2.1  | Method tab — rules, ranking formula, three defensible properties | Answers "why is this first" without you in the room                     | Built  |
-| A2.2  | Answers JSON export for the whole case                           | The response shape for the hidden-case runner                           | Built  |
-| A2.3  | km/day basis toggle — full span vs last two readings             | Makes the modelling choice auditable                                    | Built  |
-| A2.4  | Alternate sorts — most overdue, highest value                    | Shows the default is a deliberate combination                           | Built  |
-| A2.5  | Distance projections anchor on the reading date, not `today`     | Stays correct once a newer reading is added                             | Built  |
-| A2.6  | Odometer sparkline per vehicle                                   | Running pattern readable at a glance                                    | Built  |
-| A2.7  | Theme-aware, responsive at 1360 / 820 / 420 px                   | Demo survives whatever screen the judge uses                            | Built  |
-| A2.8  | Accounts — jose JWT sessions, argon2 hashing, `proxy.ts` gating  | The register is customer data; it should not be open                    | Built  |
-| A2.9  | Search across owners, vehicles and plates                        | 42 vehicles is already too many to scroll                               | Built  |
-| A2.10 | Walk-in intake — new customer and car onto the books             | The book has to grow, not just be read                                  | Built  |
-| A2.11 | Fit a new service item from a catalogue                          | Cars gain items; a fixed set would go stale                             | Built  |
-| A2.12 | **Next-visit prediction** — random forest over 1,549 visit gaps  | Due ≠ when they come. 41.5 d MAE vs 62.5 d baseline, leave-one-case-out | Built  |
-| A2.13 | CLI runner — `npm run cases`                                     | Byte-identical to `POST /api/run`, no browser or database               | Built  |
+| #     | Feature                                                             | Why it earns its place                                                                                              | Status |
+| ----- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ------ |
+| A2.1  | Method tab — rules, ranking formula, three defensible properties    | Answers "why is this first" without you in the room                                                                 | Built  |
+| A2.2  | Answers JSON export for the whole case                              | The response shape for the hidden-case runner                                                                       | Built  |
+| A2.3  | km/day basis toggle — full span vs last two readings                | Makes the modelling choice auditable                                                                                | Built  |
+| A2.4  | Alternate sorts — most overdue, highest value                       | Shows the default is a deliberate combination                                                                       | Built  |
+| A2.5  | Distance projections anchor on the reading date, not `today`        | Stays correct once a newer reading is added                                                                         | Built  |
+| A2.6  | Odometer sparkline per vehicle                                      | Running pattern readable at a glance                                                                                | Built  |
+| A2.7  | Theme-aware, responsive at 1360 / 820 / 420 px                      | Demo survives whatever screen the judge uses                                                                        | Built  |
+| A2.8  | Accounts — jose JWT sessions, argon2 hashing, `proxy.ts` gating     | The register is customer data; it should not be open                                                                | Built  |
+| A2.9  | Search across owners, vehicles and plates                           | 42 vehicles is already too many to scroll                                                                           | Built  |
+| A2.10 | Walk-in intake — new customer and car onto the books                | The book has to grow, not just be read                                                                              | Built  |
+| A2.11 | Fit a new service item from a catalogue                             | Cars gain items; a fixed set would go stale                                                                         | Built  |
+| A2.12 | **Next-visit prediction** — random forest over 1,549 visit gaps     | Due ≠ when they come. 41.5 d MAE vs 62.5 d baseline, leave-one-case-out                                             | Built  |
+| A2.13 | CLI runner — `npm run cases`                                        | Byte-identical to `POST /api/run`, no browser or database                                                           | Built  |
+| A2.14 | **Return probability** — discrete-time hazard, 9,952 person-periods | Uses the 1,051 censored spells the point model must discard. Brier 0.1258 vs 0.1314 flat rate                       | Built  |
+| A2.15 | Return-weighted ranking — opt-in fourth knob                        | Ranks the calls that change an outcome above customers who walk in anyway. Off by default so the pinned order holds | Built  |
+| A2.16 | **Probabilistic workload** — what will land, not just what is due   | Backtested: MAE 4.8 jobs/case vs 6.7 for the due-date baseline; 80% band covered 20 of 25 cases                     | Built  |
+| A2.17 | Workshop accounts — manager/staff, add a colleague, change password | A password change retires every other session, so a starting password stops working the moment it is changed        | Built  |
+| A2.18 | Odometer plausibility guard                                         | A mistyped digit silently poisoned every distance estimate on the car; now rejected against its own km/day          | Built  |
+| A2.19 | Module documentation in `docs/`                                     | Ten files, one per module, plus a glossary                                                                          | Built  |
 
-### A3 · Open
+### A3 · Shipped since, and still open
 
-| #    | Feature                           | Detail                                                  | Status   |
-| ---- | --------------------------------- | ------------------------------------------------------- | -------- |
-| A3.1 | Vercel deploy and a live URL      | Next.js port is done; the deploy and `live_url` are not | **Open** |
-| A3.2 | In-app case loader                | A paste/upload control so M1.5 is exercisable on screen | Open     |
-| A3.3 | Owner-level batching in the model | A customer's cars are scored independently today        | Open     |
+| #    | Feature                           | Detail                                                                                    | Status    |
+| ---- | --------------------------------- | ----------------------------------------------------------------------------------------- | --------- |
+| A3.1 | Vercel deploy and a live URL      | <https://lsh26-t027-p09.vercel.app/> — `/api/run` there returns the pinned PUB-01 answers | **Built** |
+| A3.2 | In-app case loader                | A paste/upload control so M1.5 is exercisable on screen                                   | Open      |
+| A3.3 | Owner-level batching in the model | A customer's cars are scored independently today                                          | Open      |
 
 ---
 
@@ -125,13 +131,13 @@ _Scored item 4 — every item with next due date and cost; record a service, tha
 
 ## Submission checklist
 
-| Item                          | Status                                    |
-| ----------------------------- | ----------------------------------------- |
-| `README.md`                   | Built                                     |
-| `EVENT.md`                    | Built                                     |
-| `LICENSES.md`                 | Built                                     |
-| `evaluation-manifest.json`    | R1–R4 complete; **`live_url` still TODO** |
-| Live URL, opens with no setup | **Open — blocks every scored item**       |
-| Team member contributions     | **Two entries still TODO**                |
-| `npm run build`               | Passes                                    |
-| `npm run lint`                | Passes                                    |
+| Item                          | Status                                       |
+| ----------------------------- | -------------------------------------------- |
+| `README.md`                   | Built                                        |
+| `EVENT.md`                    | Built                                        |
+| `LICENSES.md`                 | Built                                        |
+| `evaluation-manifest.json`    | R1–R4 complete; `live_url` filled in         |
+| Live URL, opens with no setup | Built — <https://lsh26-t027-p09.vercel.app/> |
+| Team member contributions     | **Two entries still TODO**                   |
+| `npm run build`               | Passes                                       |
+| `npm run lint`                | Passes                                       |

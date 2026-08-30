@@ -9,6 +9,14 @@ repository is the team's own.
 No license has been chosen for the team's own source. All rights reserved by the
 authors pending a decision after the event.
 
+## Vendored source
+
+`src/components/ui/` is shadcn/ui component source **copied into this
+repository** by the shadcn CLI, not imported from a package. It is MIT-licensed
+work by shadcn, modified in places to fit this project's design tokens. The
+`shadcn` and `@shadcn/react` rows below cover the CLI and its runtime; this note
+covers the ~60 component files themselves.
+
 ## Runtime dependencies
 
 | Package                  | Version | License      |
@@ -60,6 +68,22 @@ authors pending a decision after the event.
 | tsx                  | 4.23.13  | MIT               |
 | typescript           | 5.9.3    | Apache-2.0        |
 
+## Fonts
+
+Loaded at build time through `next/font/google`, which self-hosts them from the
+deployment rather than fetching from Google at runtime. All four are under the
+**SIL Open Font License 1.1**.
+
+| Font          | By           |
+| ------------- | ------------ |
+| Geist         | Vercel       |
+| Geist Mono    | Vercel       |
+| Archivo       | Omnibus-Type |
+| IBM Plex Mono | IBM          |
+
+`plans/Vehicle Service Due Predictor UI (1).html`, the design mockup, links
+Archivo and IBM Plex Mono from Google Fonts directly; the application does not.
+
 ## Python (ml/)
 
 The visit-prediction model in `ml/` runs on a separate Python toolchain,
@@ -73,6 +97,10 @@ the deployed application.
 | fastapi      | MIT          |
 | uvicorn      | BSD-3-Clause |
 
+They are fetched on demand by [uv](https://github.com/astral-sh/uv) (Astral,
+MIT OR Apache-2.0), which is a developer tool rather than a dependency of either
+application.
+
 Transitive dependencies of the above are covered by their own licenses; see
 `package-lock.json` and the installed distributions for the full tree.
 
@@ -82,8 +110,14 @@ The service cases (`src/data/case-pub-01.json`, `ml/cases.json`) are the
 event-published fixtures for problem P09 plus records entered through the
 application. They contain no real customer data.
 
+`src/data/visit-predictions.json` is derived from those fixtures — the fitted
+lookup table and hazard produced by `ml/visit_model.py` and `ml/return_model.py`.
+It is generated output, not a third-party asset.
+
 ## Tools
 
 Claude Code (Anthropic) was used during development; see `ai_tools_used` in
 `evaluation-manifest.json` for what it was used for and how the output was
 verified.
+
+The application is deployed on Vercel at <https://lsh26-t027-p09.vercel.app/>.
