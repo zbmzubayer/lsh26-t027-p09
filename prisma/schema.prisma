@@ -7,14 +7,23 @@ datasource db {
   provider = "postgresql"
 }
 
-/// Workshop staff login. Unrelated to the case data below — a user is not an Owner.
+/// Workshop staff login. A user is not an Owner — owners are the customers.
+/// `caseId` is the one book this user works out of: it is read from the session
+/// on every request, never from the client, so a signed-in user can only ever
+/// see and write their own workshop's data.
+// ponytail: nullable because the seed predates it and /api/run needs no user.
+// An account with no workshop gets told so rather than being defaulted into
+// someone else's book.
 model User {
   id           String   @id @default(uuid(7)) @db.Uuid
   name         String
   email        String   @unique
   passwordHash String
+  caseId       String?
   createdAt    DateTime @default(now()) @db.Timestamptz(6)
   updatedAt    DateTime @updatedAt @db.Timestamptz(6)
+
+  case Case? @relation(fields: [caseId], references: [id], onDelete: SetNull)
 }
 
 /// Every date is a plain ISO string ("2026-08-30"), never DateTime: `today` is a
@@ -33,6 +42,7 @@ model Case {
   id     String  @id // "PUB-01"
   today  String // "2026-08-30"
   owners Owner[]
+  users  User[]
 }
 
 model Owner {

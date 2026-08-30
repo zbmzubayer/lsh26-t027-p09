@@ -43,16 +43,15 @@ async function json<T>(url: string, init?: RequestInit): Promise<T> {
   return body as T;
 }
 
-interface CaseSummary {
-  case_id: string;
-  today: string;
-  vehicles: number;
-  owners: number;
-}
-
-export function DueBook({ user }: { user: { name: string; email: string } }) {
+export function DueBook({
+  user,
+  caseId,
+}: {
+  user: { name: string; email: string };
+  /** The workshop this account works out of, resolved on the server. */
+  caseId: string;
+}) {
   const qc = useQueryClient();
-  const [caseId, setCaseId] = useState("PUB-01");
   const [view, setView] = useState<View>("call");
   const [vehicleId, setVehicleId] = useState<string | null>(null);
   const [opts, setOpts] = useState<EngineOpts>(DEFAULT_OPTS);
@@ -60,14 +59,9 @@ export function DueBook({ user }: { user: { name: string; email: string } }) {
   const [flash, setFlash] = useState<Flash | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
 
-  const cases = useQuery({
-    queryKey: ["cases"],
-    queryFn: () => json<CaseSummary[]>("/api/cases"),
-  });
   const kase = useQuery({
     queryKey: ["case", caseId],
-    queryFn: () =>
-      json<CaseData>(`/api/case?caseId=${encodeURIComponent(caseId)}`),
+    queryFn: () => json<CaseData>("/api/case"),
   });
 
   /**
@@ -98,13 +92,12 @@ export function DueBook({ user }: { user: { name: string; email: string } }) {
       const payload =
         req.kind === "service"
           ? {
-              caseId,
               vehicleId,
               itemName: req.itemName,
               date: req.date,
               ...(req.km != null ? { km: req.km } : {}),
             }
-          : { caseId, vehicleId, km: req.km };
+          : { vehicleId, km: req.km };
       const next = await json<CaseData>(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -212,26 +205,6 @@ export function DueBook({ user }: { user: { name: string; email: string } }) {
             </div>
           </div>
 
-          <div className="opt">
-            <label htmlFor="casesel">Case</label>
-            <select
-              id="casesel"
-              value={caseId}
-              onChange={(e) => {
-                setCaseId(e.target.value);
-                setVehicleId(null);
-                setFlash(null);
-                if (view === "vehicle") setView("vehicles");
-              }}
-            >
-              {(cases.data ?? [{ case_id: caseId }]).map((c) => (
-                <option key={c.case_id} value={c.case_id}>
-                  {c.case_id}
-                </option>
-              ))}
-            </select>
-          </div>
-
           <div
             className="asof"
             title="Every date on this page is computed against the case's own date, not the browser clock."
@@ -243,6 +216,7 @@ export function DueBook({ user }: { user: { name: string; email: string } }) {
           <div className="opt" style={{ gap: 10 }}>
             <span style={{ fontSize: 12, color: "var(--ink-3)" }}>
               {user.name}
+              <span style={{ marginLeft: 8, opacity: 0.7 }}>{caseId}</span>
             </span>
             <ThemeToggle />
             <LogoutButton />

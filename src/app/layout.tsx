@@ -23,12 +23,15 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
+    // suppressHydrationWarning: next-themes' inline script stamps the theme on
+    // <html> before React hydrates, so server and client markup differ by design
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <ThemeProvider>
+        <ThemeProvider attribute="class">
           <TanstackQueryProvider>{children}</TanstackQueryProvider>
         </ThemeProvider>
       </body>
