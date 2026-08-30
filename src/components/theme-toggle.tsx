@@ -13,7 +13,7 @@ export function ThemeToggle() {
 
   return (
     <Button
-      className="relative ml-auto size-8"
+      className="relative size-8"
       onClick={toggleTheme}
       size="icon"
       variant="ghost"

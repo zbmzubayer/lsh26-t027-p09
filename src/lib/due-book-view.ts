@@ -12,6 +12,7 @@ import {
   type Vehicle,
   vehicleStatuses,
 } from "@/lib/engine";
+import { lastVisitOf, pReturn } from "@/lib/visit";
 
 /**
  * Everything the screens need, derived from the engine's own output. The engine
@@ -121,7 +122,25 @@ export function analyse(
     };
   });
 
-  const callList = buildCallList(data, sort, opts);
+  /**
+   * P(this owner does NOT walk in unprompted within 30 days), from the hazard
+   * in ml/return_model.py. Supplied to the engine rather than imported by it,
+   * so the engine keeps knowing nothing about the model. A vehicle with no
+   * recorded visit weighs 1: never seen is a reason to call, not to skip.
+   */
+  const wontReturn = (vehicleId: string) => {
+    const v = data.vehicles.find((x) => x.id === vehicleId);
+    const last = v ? lastVisitOf(v) : null;
+    if (!last) return 1;
+    const away = Math.max(
+      0,
+      Math.round((Date.parse(data.today) - Date.parse(last)) / 86400000),
+    );
+    const p = pReturn(away, 30);
+    return p == null ? 1 : 1 - p;
+  };
+
+  const callList = buildCallList(data, sort, opts, wontReturn);
   const all = vehicles.flatMap((v) => v.statuses);
   const overdue = all.filter((s) => s.status === "overdue");
   const dueSoon = all.filter((s) => s.status === "due_soon");

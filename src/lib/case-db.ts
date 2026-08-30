@@ -1,9 +1,10 @@
 import { addMonths, format, parseISO } from "date-fns";
-import type {
-  CaseData,
-  HistoryEntry,
-  ServiceItem,
-  Vehicle,
+import {
+  type CaseData,
+  type HistoryEntry,
+  readingProblem,
+  type ServiceItem,
+  type Vehicle,
 } from "@/lib/engine";
 import prisma from "@/lib/prisma";
 import { CATALOGUE_BY_NAME } from "@/lib/service-catalogue";
@@ -116,6 +117,26 @@ export class CaseNotFound extends Error {
 export class BadWrite extends Error {}
 
 /**
+ * A km is only believable against the car it belongs to. Both write paths that
+ * can land one — a new reading, and the km on a recorded service — go through
+ * here, because a guard on only one of them leaves the other still able to
+ * poison every distance estimate on the vehicle with a mistyped digit.
+ */
+async function guardReading(
+  caseId: string,
+  vehicleId: string,
+  date: string,
+  km: number,
+): Promise<void> {
+  const readings = await prisma.odometerReading.findMany({
+    where: { caseId, vehicleId },
+    select: { date: true, km: true },
+  });
+  const problem = readingProblem(readings, date, km);
+  if (problem) throw new BadWrite(problem);
+}
+
+/**
  * `recordService` as DB writes. Mirrors the pure function exactly: insert the
  * history row, push the odometer forward when the km beats the current reading,
  * and renew a fixed_date item's paper by 12 months. Reset falls out of
@@ -138,6 +159,8 @@ export async function recordServiceDb(
   if (!item) throw new BadWrite(`${vehicleId} has no item "${itemName}"`);
   if (item.rule === "distance_km" && km == null)
     throw new BadWrite(`${itemName} is distance-based and needs a km`);
+
+  if (km != null) await guardReading(caseId, vehicleId, when, km);
 
   const latest = await prisma.odometerReading.findFirst({
     where: { caseId, vehicleId },
@@ -181,14 +204,13 @@ export async function addOdometerReadingDb(
 ): Promise<CaseData> {
   const kase = await prisma.case.findUnique({ where: { id: caseId } });
   if (!kase) throw new CaseNotFound(caseId);
-  if (!Number.isInteger(km) || km < 0)
-    throw new BadWrite("km must be a non-negative whole number");
-
   const exists = await prisma.vehicle.findUnique({
     where: { caseId_id: { caseId, id: vehicleId } },
     select: { id: true },
   });
   if (!exists) throw new BadWrite(`No vehicle ${vehicleId} in ${caseId}`);
+
+  await guardReading(caseId, vehicleId, kase.today, km);
 
   await prisma.odometerReading.upsert({
     where: {

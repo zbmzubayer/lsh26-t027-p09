@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Archivo, Geist, Geist_Mono, IBM_Plex_Mono } from "next/font/google";
 import { ThemeProvider } from "@/providers/theme-provider";
 
 import "./globals.css";
+// The Workshop Due Book design system. Scoped to .duebook, so it is inert until
+// a page opts in — but loaded here so the landing page, login and register can
+// look like the product instead of like three different applications.
+import "./due-book.css";
 import { TanstackQueryProvider } from "@/providers/tanstack-query-provider";
 
 const geistSans = Geist({
@@ -13,6 +17,18 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+// Archivo carries the width axis the design leans on (font-variation-settings).
+const archivo = Archivo({
+  subsets: ["latin"],
+  axes: ["wdth"],
+  variable: "--font-archivo",
+});
+const plexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-plex-mono",
 });
 
 export const metadata: Metadata = {
@@ -28,7 +44,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${archivo.variable} ${plexMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <ThemeProvider attribute="class">

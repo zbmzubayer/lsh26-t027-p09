@@ -28,6 +28,8 @@ import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import LeaveOneGroupOut
 
+import return_model  # noqa: E402  (local module, same directory)
+
 ROOT = Path(__file__).resolve().parent.parent
 CASES = ROOT / "ml/cases.json"
 CASE = ROOT / "src/data/case-pub-01.json"  # fallback when the export has not run
@@ -201,11 +203,16 @@ def main():
             }
         out[c["case_id"]] = per_vehicle
 
+    # "will they come on their own?" — a separate question from "when", and the
+    # only one the 1,051 censored spells can answer. See ml/return_model.py.
+    hazard_block = return_model.fit(cases)
+
     OUT.write_text(json.dumps({
         "source": CASES.name if CASES.exists() else CASE.name,
         "metrics": metrics,
         "interval_days": {"p10": lo, "p90": hi},
         "features": FEATURES,
+        "return_hazard": hazard_block,
         "cases": out,
     }, indent=2) + "\n")
 
@@ -218,7 +225,12 @@ def main():
           f"{metrics['permutations_beating_model']}/12 beat the model)")
     print(f"80% interval: {lo:+d}d to {hi:+d}d around the prediction")
     print(f"-> {OUT.relative_to(ROOT)} ({OUT.stat().st_size // 1024} KB)")
+    rm_m = hazard_block["metrics"]
+    print(f"return hazard: brier {rm_m['model_brier']} vs flat "
+          f"{rm_m['baseline_brier']} ({rm_m['n_person_periods']} person-periods, "
+          f"{rm_m['n_censored_spells']} of them censored)")
     check(out, metrics, cases)
+    return_model.check(hazard_block, cases)
 
 
 def check(out, metrics, cases):

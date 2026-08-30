@@ -43,6 +43,19 @@ const LiveResponse = z.object({
   ),
 });
 
+/**
+ * Only what the model actually reads. It derives its nine features from the
+ * odometer, the fitted items and the service history; `plate`, `model` and
+ * `owner_id` are never looked at. The service is reached over a public ngrok
+ * URL, so sending registration numbers it ignores is cost with no benefit.
+ */
+const forTheModel = (v: Vehicle) => ({
+  id: v.id,
+  odometer_readings: v.odometer_readings,
+  service_items: v.service_items,
+  service_history: v.service_history,
+});
+
 /** Returns null on any failure — an unreachable tunnel is expected, not an error. */
 async function live(
   vehicles: Vehicle[],
@@ -58,7 +71,7 @@ async function live(
         // like a browser; this header is what makes it return the JSON.
         "ngrok-skip-browser-warning": "true",
       },
-      body: JSON.stringify({ today, vehicles }),
+      body: JSON.stringify({ today, vehicles: vehicles.map(forTheModel) }),
       signal: AbortSignal.timeout(LIVE_TIMEOUT_MS),
       cache: "no-store",
     });

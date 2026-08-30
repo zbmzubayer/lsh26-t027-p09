@@ -26,6 +26,97 @@
     "visit_month",
     "cost_at_visit_bdt"
   ],
+  "return_hazard": {
+    "bucket_days": 30,
+    "hazard": [
+      0.11038,
+      0.12607,
+      0.13869,
+      0.15531,
+      0.15991,
+      0.22997,
+      0.29969,
+      0.35754,
+      0.54783,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5
+    ],
+    "metrics": {
+      "cv": "leave-one-case-out",
+      "bucket_days": 30,
+      "n_person_periods": 9952,
+      "n_completed_gaps": 1549,
+      "n_censored_spells": 1051,
+      "baseline_brier": 0.13143,
+      "model_brier": 0.12583,
+      "flat_rate": 0.1556,
+      "calibration": [
+        {
+          "predicted": 0.1091,
+          "observed": 0.1347,
+          "n": 995
+        },
+        {
+          "predicted": 0.1106,
+          "observed": 0.1106,
+          "n": 995
+        },
+        {
+          "predicted": 0.1168,
+          "observed": 0.1065,
+          "n": 995
+        },
+        {
+          "predicted": 0.1258,
+          "observed": 0.1327,
+          "n": 995
+        },
+        {
+          "predicted": 0.1285,
+          "observed": 0.1136,
+          "n": 995
+        },
+        {
+          "predicted": 0.1384,
+          "observed": 0.1407,
+          "n": 995
+        },
+        {
+          "predicted": 0.1454,
+          "observed": 0.1528,
+          "n": 995
+        },
+        {
+          "predicted": 0.1563,
+          "observed": 0.1598,
+          "n": 995
+        },
+        {
+          "predicted": 0.1796,
+          "observed": 0.1809,
+          "n": 995
+        },
+        {
+          "predicted": 0.3368,
+          "observed": 0.3226,
+          "n": 995
+        }
+      ]
+    }
+  },
   "cases": {
     "PUB-01": {
       "V01": {

@@ -69,3 +69,57 @@ export function ItemTable({
     </div>
   );
 }
+
+/**
+ * The same information as ItemTable, stacked instead of columned. A six-column
+ * table clips its "why that date" sentence to a sliver inside a side drawer;
+ * here the reason gets the full width, which is the column that matters most.
+ */
+export function ItemCards({ statuses }: { statuses: ItemStatus[] }) {
+  return (
+    <div className="itemcards">
+      {statuses.map((it) => (
+        <article className={`itemcard stripe ${it.status}`} key={it.item.name}>
+          <div className="ic-top">
+            <b>{it.item.name}</b>
+            <span className="rulepill">{ruleLabel(it.item)}</span>
+            <span style={{ marginLeft: "auto" }}>
+              <Chip
+                status={it.status}
+                days={Number.isFinite(it.daysLeft) ? it.daysLeft : null}
+              />
+            </span>
+          </div>
+          <dl className="ic-facts">
+            <div>
+              <dt>Next due</dt>
+              <dd className="num">{it.dueDate}</dd>
+            </div>
+            <div>
+              <dt>Cost</dt>
+              <dd className="money">{tkS(it.cost)}</dd>
+            </div>
+            <div>
+              <dt>Score</dt>
+              <dd className="money">{it.score > 0 ? tkS(it.score) : "—"}</dd>
+            </div>
+            {it.score > 0 && (
+              <div className="ic-math">
+                <dt>How</dt>
+                <dd className="mathline">
+                  {`${tkS(it.cost)} × ${it.urgency.toFixed(2)}${
+                    it.risk !== 1 ? " × 1.5" : ""
+                  } ≈ ${tkS(it.score)}`}
+                </dd>
+              </div>
+            )}
+          </dl>
+          <p className="ic-why">
+            <span className="eyebrow">Why that date</span>
+            {it.reason}
+          </p>
+        </article>
+      ))}
+    </div>
+  );
+}

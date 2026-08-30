@@ -2,8 +2,10 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { Account, type AccountUser } from "@/components/account/account";
 import { LogoutButton } from "@/components/auth/logout-button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import type { WorkshopUser } from "@/lib/auth";
 import { analyse } from "@/lib/due-book-view";
 import {
   type CallSort,
@@ -15,6 +17,7 @@ import {
 } from "@/lib/engine";
 import type { VisitPrediction } from "@/lib/visit";
 import { CallList } from "./call-list";
+import { DetailDrawer } from "./detail-drawer";
 import { IntakeForm, type IntakePayload } from "./intake-form";
 import { Method } from "./method";
 import { Search } from "./search";
@@ -30,7 +33,7 @@ type View =
   | "search"
   | "workload"
   | "reminders"
-  | "method";
+  | "account";
 
 const TABS: [View, string][] = [
   ["call", "Call list"],
@@ -38,7 +41,7 @@ const TABS: [View, string][] = [
   ["search", "Search"],
   ["workload", "Workload"],
   ["reminders", "Reminders"],
-  ["method", "Method"],
+  ["account", "Account"],
 ];
 
 async function json<T>(url: string, init?: RequestInit): Promise<T> {
@@ -50,9 +53,12 @@ async function json<T>(url: string, init?: RequestInit): Promise<T> {
 
 export function DueBook({
   user,
+  staff,
   caseId,
 }: {
-  user: { name: string; email: string };
+  user: AccountUser;
+  /** Null unless this account manages the workshop — the list is absent, not hidden. */
+  staff: WorkshopUser[] | null;
   /** The workshop this account works out of, resolved on the server. */
   caseId: string;
 }) {
@@ -62,7 +68,10 @@ export function DueBook({
   const [opts, setOpts] = useState<EngineOpts>(DEFAULT_OPTS);
   const [sort, setSort] = useState<CallSort>("score");
   const [flash, setFlash] = useState<Flash | null>(null);
-  const [copied, setCopied] = useState<string | null>(null);
+  const [copied, setCopied] = useState<{ label: string; ok: boolean } | null>(
+    null,
+  );
+  const [methodOpen, setMethodOpen] = useState(false);
   const [intakeOpen, setIntakeOpen] = useState(false);
   const [intakeError, setIntakeError] = useState<string | null>(null);
 
@@ -208,11 +217,13 @@ export function DueBook({
   const copy = async (text: string, label: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      setCopied(label);
-      setTimeout(() => setCopied(null), 1400);
+      setCopied({ label, ok: true });
     } catch {
-      setCopied(null);
+      // The clipboard is blocked outside a secure context — over plain http on
+      // a LAN address, say. Silently doing nothing looks like a broken button.
+      setCopied({ label, ok: false });
     }
+    setTimeout(() => setCopied(null), 2200);
   };
 
   const go = (v: View) => {
@@ -294,6 +305,18 @@ export function DueBook({
               {user.name}
               <span style={{ marginLeft: 8, opacity: 0.7 }}>{caseId}</span>
             </span>
+            {copied && (
+              <span
+                className={`chip ${copied.ok ? "fine" : "overdue"}`}
+                aria-live="polite"
+                style={{ whiteSpace: "nowrap" }}
+              >
+                <span className="dot" />
+                {copied.ok
+                  ? `${copied.label} — copied`
+                  : "Clipboard blocked — select the text instead"}
+              </span>
+            )}
             <ThemeToggle />
             <LogoutButton />
           </div>
@@ -333,74 +356,99 @@ export function DueBook({
       </header>
 
       <main className="shell">
-        <div className="opts">
-          <fieldset className="opt">
-            <legend>Due-soon window</legend>
-            <div className="seg">
-              {[14, 30, 45].map((d) => (
+        {view === "call" && (
+          <div className="opts">
+            <fieldset className="opt">
+              <legend>Due-soon window</legend>
+              <div className="seg">
+                {[14, 30, 45].map((d) => (
+                  <button
+                    type="button"
+                    key={d}
+                    aria-pressed={opts.dueSoonDays === d}
+                    onClick={() => setOpts((o) => ({ ...o, dueSoonDays: d }))}
+                  >
+                    {d}d
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+            <fieldset className="opt">
+              <legend>Daily running from</legend>
+              <div className="seg">
+                {(
+                  [
+                    ["span", "All readings"],
+                    ["last-two", "Last two"],
+                  ] as [EngineOpts["kmBasis"], string][]
+                ).map(([v, label]) => (
+                  <button
+                    type="button"
+                    key={v}
+                    aria-pressed={opts.kmBasis === v}
+                    onClick={() => setOpts((o) => ({ ...o, kmBasis: v }))}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+            <fieldset className="opt">
+              <legend>Safety &amp; legal weighting</legend>
+              <div className="seg">
                 <button
                   type="button"
-                  key={d}
-                  aria-pressed={opts.dueSoonDays === d}
-                  onClick={() => setOpts((o) => ({ ...o, dueSoonDays: d }))}
+                  aria-pressed={opts.riskWeights}
+                  onClick={() => setOpts((o) => ({ ...o, riskWeights: true }))}
                 >
-                  {d}d
+                  On ×1.5
                 </button>
-              ))}
-            </div>
-          </fieldset>
-          <fieldset className="opt">
-            <legend>Daily running from</legend>
-            <div className="seg">
-              {(
-                [
-                  ["span", "All readings"],
-                  ["last-two", "Last two"],
-                ] as [EngineOpts["kmBasis"], string][]
-              ).map(([v, label]) => (
                 <button
                   type="button"
-                  key={v}
-                  aria-pressed={opts.kmBasis === v}
-                  onClick={() => setOpts((o) => ({ ...o, kmBasis: v }))}
+                  aria-pressed={!opts.riskWeights}
+                  onClick={() => setOpts((o) => ({ ...o, riskWeights: false }))}
                 >
-                  {label}
+                  Off
                 </button>
-              ))}
-            </div>
-          </fieldset>
-          <fieldset className="opt">
-            <legend>Safety &amp; legal weighting</legend>
-            <div className="seg">
-              <button
-                type="button"
-                aria-pressed={opts.riskWeights}
-                onClick={() => setOpts((o) => ({ ...o, riskWeights: true }))}
+              </div>
+            </fieldset>
+            <fieldset className="opt">
+              <legend title="Rank by the calls that change an outcome: weight each row by how unlikely the owner is to arrive unprompted.">
+                Who won&apos;t come on their own
+              </legend>
+              <div className="seg">
+                <button
+                  type="button"
+                  aria-pressed={opts.returnWeighting}
+                  onClick={() =>
+                    setOpts((o) => ({ ...o, returnWeighting: true }))
+                  }
+                >
+                  Weight
+                </button>
+                <button
+                  type="button"
+                  aria-pressed={!opts.returnWeighting}
+                  onClick={() =>
+                    setOpts((o) => ({ ...o, returnWeighting: false }))
+                  }
+                >
+                  Off
+                </button>
+              </div>
+            </fieldset>
+            <div className="opt" style={{ marginLeft: "auto" }}>
+              <span
+                className="num"
+                style={{ fontSize: 11.5, color: "var(--ink-3)" }}
               >
-                On ×1.5
-              </button>
-              <button
-                type="button"
-                aria-pressed={!opts.riskWeights}
-                onClick={() => setOpts((o) => ({ ...o, riskWeights: false }))}
-              >
-                Off
-              </button>
-            </div>
-          </fieldset>
-          <div className="opt" style={{ marginLeft: "auto" }}>
-            <span
-              className="num"
-              style={{ fontSize: 11.5, color: "var(--ink-3)" }}
-            >
-              {copied
-                ? `${copied} — copied`
-                : a
+                {a
                   ? `${a.totals.overdue} overdue · ${a.totals.due_soon} due soon · ${a.totals.fine} fine of ${a.totals.items} items`
                   : ""}
-            </span>
+              </span>
+            </div>
           </div>
-        </div>
+        )}
 
         <section role="tabpanel">
           {kase.isError && (
@@ -408,7 +456,9 @@ export function DueBook({
               Could not load {caseId}: {(kase.error as Error).message}
             </div>
           )}
-          {!a && !kase.isError && (
+          {/* the only view that needs no case data, so it renders while the book loads */}
+          {view === "account" && <Account user={user} staff={staff} />}
+          {!a && !kase.isError && view !== "account" && (
             <p style={{ color: "var(--ink-3)", padding: "40px 0" }}>
               Loading {caseId}…
             </p>
@@ -428,7 +478,7 @@ export function DueBook({
                   reminderText={(ownerId) =>
                     reminderMessage(data, ownerId, opts)
                   }
-                  onShowMethod={() => go("method")}
+                  onShowMethod={() => setMethodOpen(true)}
                 />
               )}
               {view === "vehicles" && (
@@ -495,7 +545,9 @@ export function DueBook({
                   }
                 />
               )}
-              {view === "workload" && <Workload a={a} />}
+              {view === "workload" && (
+                <Workload a={a} data={data} opts={opts} />
+              )}
               {view === "reminders" && (
                 <Reminders
                   a={a}
@@ -505,10 +557,21 @@ export function DueBook({
                   }
                 />
               )}
-              {view === "method" && <Method a={a} opts={opts} onCopy={copy} />}
             </>
           )}
         </section>
+
+        {a && (
+          <DetailDrawer
+            open={methodOpen}
+            onOpenChange={setMethodOpen}
+            eyebrow="How the ranking works"
+            title="Every number on this page"
+            subtitle={`${a.totals.items} items · measured against ${a.today}`}
+          >
+            <Method a={a} opts={opts} onCopy={copy} />
+          </DetailDrawer>
+        )}
       </main>
     </div>
   );

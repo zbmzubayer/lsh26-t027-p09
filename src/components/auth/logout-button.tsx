@@ -3,12 +3,13 @@
 import { logout } from "@/actions/auth.action";
 import { Button } from "@/components/ui/button";
 
+// Calls the action directly rather than wrapping a <form>: this button sits
+// inside the change-password form on the account panel, and a nested <form> is
+// invalid HTML that the browser drops on hydration.
 export function LogoutButton() {
   return (
-    <form action={logout}>
-      <Button type="submit" variant="outline">
-        Log out
-      </Button>
-    </form>
+    <Button type="button" variant="outline" onClick={() => logout()}>
+      Log out
+    </Button>
   );
 }

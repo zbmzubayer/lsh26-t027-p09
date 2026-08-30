@@ -4,7 +4,13 @@ import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import type { Analysis, VehicleView } from "@/lib/due-book-view";
 import type { VisitPrediction } from "@/lib/visit";
+import { DetailDrawer } from "./detail-drawer";
 import { Chip, km, Plate, tk, tkS, WhatsAppButton } from "./format";
+import {
+  VehicleSummary,
+  VehicleSummaryActions,
+  VehicleSummarySubtitle,
+} from "./vehicle-summary";
 
 interface VisitResponse {
   source: "live" | "bundled";
@@ -12,7 +18,9 @@ interface VisitResponse {
   predictions: VisitPrediction[];
 }
 
-async function askVisit(body: { ownerId: string }): Promise<VisitResponse> {
+async function askVisit(
+  body: { ownerId: string } | { vehicleId: string },
+): Promise<VisitResponse> {
   const res = await fetch("/api/visit", {
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -38,21 +46,37 @@ export function Search({
   reminderText: (ownerId: string) => string;
 }) {
   const [q, setQ] = useState("");
+  // a search hit opens in place rather than navigating away: you are usually
+  // mid-call, and losing the result list to answer one question is the wrong
+  // trade
+  const [openId, setOpenId] = useState<string | null>(null);
   const [visits, setVisits] = useState<
     Record<string, { source: string; note?: string; rows: VisitPrediction[] }>
   >({});
+  const [byVehicle, setByVehicle] = useState<Record<string, VisitPrediction>>(
+    {},
+  );
 
   const visit = useMutation({
     mutationFn: askVisit,
-    onSuccess: (data, vars) =>
-      setVisits((prev) => ({
-        ...prev,
-        [vars.ownerId]: {
-          source: data.source,
-          note: data.note,
-          rows: data.predictions,
-        },
-      })),
+    onSuccess: (data, vars) => {
+      if ("ownerId" in vars)
+        setVisits((prev) => ({
+          ...prev,
+          [vars.ownerId]: {
+            source: data.source,
+            note: data.note,
+            rows: data.predictions,
+          },
+        }));
+      // either shape lands in the by-vehicle store, so the drawer can read one
+      // regardless of which button fetched it
+      setByVehicle((prev) => {
+        const next = { ...prev };
+        for (const p of data.predictions) next[p.vehicleId] = p;
+        return next;
+      });
+    },
   });
 
   const term = q.trim().toLowerCase();
@@ -84,6 +108,12 @@ export function Search({
       return hay.includes(term);
     })
     .sort((x, y) => x.owner.name.localeCompare(y.owner.name));
+
+  const openVehicleView =
+    a.vehicles.find((v) => v.vehicle.id === openId) ?? null;
+  const openPrediction = openVehicleView
+    ? (byVehicle[openVehicleView.vehicle.id] ?? null)
+    : null;
 
   return (
     <div className="panel">
@@ -122,7 +152,10 @@ export function Search({
           const due = vehicles.reduce((s, v) => s + v.dueValue, 0);
           const overdue = vehicles.reduce((s, v) => s + v.counts.overdue, 0);
           const soon = vehicles.reduce((s, v) => s + v.counts.due_soon, 0);
-          const pending = visit.isPending && visit.variables?.ownerId === id;
+          const pending =
+            visit.isPending &&
+            (visit.variables as { ownerId?: string } | undefined)?.ownerId ===
+              id;
 
           return (
             <div className="remcard" key={id} style={{ marginBottom: 12 }}>
@@ -186,10 +219,14 @@ export function Search({
                         <tr
                           key={v.vehicle.id}
                           className={`callrow stripe ${v.worst}`}
-                          onClick={() => onOpenVehicle(v.vehicle.id)}
+                          onClick={() => setOpenId(v.vehicle.id)}
                           tabIndex={0}
+                          aria-haspopup="dialog"
                           onKeyDown={(e) => {
-                            if (e.key === "Enter") onOpenVehicle(v.vehicle.id);
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              setOpenId(v.vehicle.id);
+                            }
                           }}
                         >
                           <td>
@@ -290,6 +327,37 @@ export function Search({
             </div>
           );
         })}
+
+        {openVehicleView && (
+          <DetailDrawer
+            open={openId !== null}
+            onOpenChange={(o) => !o && setOpenId(null)}
+            eyebrow={`${openVehicleView.vehicle.id} · ${openVehicleView.vehicle.model}`}
+            title={openVehicleView.vehicle.model}
+            subtitle={<VehicleSummarySubtitle v={openVehicleView} />}
+            footer={
+              <VehicleSummaryActions
+                v={openVehicleView}
+                reminderText={reminderText}
+                hasPrediction={openPrediction != null}
+                predicting={
+                  visit.isPending &&
+                  (visit.variables as { vehicleId?: string })?.vehicleId ===
+                    openVehicleView.vehicle.id
+                }
+                onCheckVisit={() =>
+                  visit.mutate({ vehicleId: openVehicleView.vehicle.id })
+                }
+                onOpenVehicle={(id) => {
+                  setOpenId(null);
+                  onOpenVehicle(id);
+                }}
+              />
+            }
+          >
+            <VehicleSummary v={openVehicleView} prediction={openPrediction} />
+          </DetailDrawer>
+        )}
 
         {visit.isError && (
           <output className="flash bad">
