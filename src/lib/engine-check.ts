@@ -9,6 +9,7 @@ import {
   type CaseData,
   computeItem,
   kmPerDay,
+  readingProblem,
   recordService,
   vehicleStatuses,
 } from "./engine";
@@ -182,6 +183,54 @@ assert.deepStrictEqual(
     [3, 10800],
   ],
 );
+
+/* ---------------------------------------------------------------------------
+ * Odometer plausibility. A mistyped digit lands silently and every distance
+ * estimate on the car recomputes off it, so the guard is judged against the
+ * vehicle's own running rather than a fleet constant.
+ * ------------------------------------------------------------------------ */
+{
+  // 40 km/day: 1,200 km over the 30 days to 2026-08-30
+  const readings = [
+    { date: "2026-07-31", km: 59935 },
+    { date: "2026-08-30", km: 61135 },
+  ];
+  const ok = (km: number, date = "2026-09-29") =>
+    readingProblem(readings, date, km);
+
+  assert.strictEqual(ok(62335), null, "a normal month's running was refused");
+  // one long drive on top of a normal month, under the 300 km/day floor
+  assert.strictEqual(ok(62700), null, "a long trip was refused");
+  assert.ok(ok(611350)?.includes("km/day"), "a mistyped extra digit got in");
+  assert.ok(
+    ok(59000)?.includes("backwards"),
+    "an odometer was allowed to run backwards",
+  );
+  // a reading dated the same day replaces rather than appends, so it is judged
+  // against the reading *before* it, not against itself
+  assert.strictEqual(
+    ok(61200, "2026-08-30"),
+    null,
+    "a same-day correction was refused",
+  );
+  // replacing the same-day reading leaves one neighbour, which is not a span:
+  // the rate must still be quoted from the car's own history, not the fleet
+  assert.ok(
+    readingProblem(readings, "2026-08-30", 610000)?.includes("40.0 km/day"),
+    "a same-day correction was judged against the fleet median",
+  );
+  assert.ok(
+    readingProblem(readings, "2026-08-15", 70000)?.includes("already read"),
+    "a backdated reading was allowed to exceed a later one",
+  );
+  assert.strictEqual(
+    readingProblem([], "2026-08-30", 101743),
+    null,
+    "a first reading has no history to contradict it",
+  );
+}
+
+console.log("engine-check: odometer guard holds");
 
 console.log("engine-check: all assertions passed");
 
