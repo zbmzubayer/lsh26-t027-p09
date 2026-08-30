@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { Analysis } from "@/lib/due-book-view";
 import type { CallSort } from "@/lib/engine";
-import { Chip, daysText, Plate, tk, tkS } from "./format";
+import { Chip, daysText, Plate, tk, tkS, WhatsAppButton } from "./format";
 import { ItemTable } from "./item-table";
 
 export function CallList({
@@ -13,6 +13,7 @@ export function CallList({
   onSort,
   onOpenVehicle,
   onCopyReminder,
+  reminderText,
   onShowMethod,
 }: {
   a: Analysis;
@@ -21,6 +22,8 @@ export function CallList({
   onSort: (s: CallSort) => void;
   onOpenVehicle: (id: string) => void;
   onCopyReminder: (ownerId: string, label: string) => void;
+  /** The exact reminder text for an owner, for the WhatsApp deep link. */
+  reminderText: (ownerId: string) => string;
   onShowMethod: () => void;
 }) {
   const [filter, setFilter] = useState("");
@@ -228,6 +231,14 @@ export function CallList({
                             >
                               Open vehicle page
                             </button>
+                            <WhatsAppButton
+                              small
+                              phone={r.owner.phone}
+                              text={reminderText(r.owner.id)}
+                              label={`WhatsApp ${r.owner.name}`}
+                              // the row itself toggles on click
+                              onClick={(e) => e.stopPropagation()}
+                            />
                             <button
                               type="button"
                               className="btn sm"
@@ -239,7 +250,7 @@ export function CallList({
                                 );
                               }}
                             >
-                              Copy reminder for {r.owner.name}
+                              Copy text
                             </button>
                           </div>
                         </div>

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { Analysis } from "@/lib/due-book-view";
-import { Plate, tk, tkS } from "./format";
+import { Plate, tk, tkS, WhatsAppButton } from "./format";
 
 export function Workload({ a }: { a: Analysis }) {
   const [week, setWeek] = useState<number | null>(null);
@@ -211,14 +211,23 @@ export function Reminders({
                   {rows.length} vehicle{rows.length === 1 ? "" : "s"} ·{" "}
                   {tk(total)}
                 </span>
-                <button
-                  type="button"
-                  className="btn sm primary"
-                  style={{ marginLeft: "auto" }}
-                  onClick={() => onCopy(id, "Copy message")}
+                <span
+                  style={{
+                    marginLeft: "auto",
+                    display: "flex",
+                    gap: 8,
+                    flexWrap: "wrap",
+                  }}
                 >
-                  Copy message
-                </button>
+                  <WhatsAppButton small phone={o.phone} text={message(id)} />
+                  <button
+                    type="button"
+                    className="btn sm"
+                    onClick={() => onCopy(id, "Copy message")}
+                  >
+                    Copy message
+                  </button>
+                </span>
               </div>
               <pre>{message(id)}</pre>
             </div>

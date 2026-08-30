@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import type { Analysis, VehicleView } from "@/lib/due-book-view";
 import type { VisitPrediction } from "@/lib/visit";
-import { Chip, km, Plate, tk, tkS } from "./format";
+import { Chip, km, Plate, tk, tkS, WhatsAppButton } from "./format";
 
 interface VisitResponse {
   source: "live" | "bundled";
@@ -31,9 +31,11 @@ async function askVisit(body: { ownerId: string }): Promise<VisitResponse> {
 export function Search({
   a,
   onOpenVehicle,
+  reminderText,
 }: {
   a: Analysis;
   onOpenVehicle: (id: string) => void;
+  reminderText: (ownerId: string) => string;
 }) {
   const [q, setQ] = useState("");
   const [visits, setVisits] = useState<
@@ -138,15 +140,30 @@ export function Search({
                 </span>
                 {overdue > 0 && <Chip status="overdue">{overdue} overdue</Chip>}
                 {soon > 0 && <Chip status="due_soon">{soon} due soon</Chip>}
-                <button
-                  type="button"
-                  className="btn sm primary"
-                  style={{ marginLeft: "auto" }}
-                  disabled={pending}
-                  onClick={() => visit.mutate({ ownerId: id })}
+                <span
+                  style={{
+                    marginLeft: "auto",
+                    display: "flex",
+                    gap: 8,
+                    flexWrap: "wrap",
+                  }}
                 >
-                  {pending ? "Checking…" : "When will they be back?"}
-                </button>
+                  {due > 0 && (
+                    <WhatsAppButton
+                      small
+                      phone={owner.phone}
+                      text={reminderText(id)}
+                    />
+                  )}
+                  <button
+                    type="button"
+                    className="btn sm primary"
+                    disabled={pending}
+                    onClick={() => visit.mutate({ ownerId: id })}
+                  >
+                    {pending ? "Checking…" : "When will they be back?"}
+                  </button>
+                </span>
               </div>
 
               <div className="scroll">

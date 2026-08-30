@@ -425,6 +425,9 @@ export function DueBook({
                   onCopyReminder={(ownerId, label) =>
                     copy(reminderMessage(data, ownerId, opts), label)
                   }
+                  reminderText={(ownerId) =>
+                    reminderMessage(data, ownerId, opts)
+                  }
                   onShowMethod={() => go("method")}
                 />
               )}
@@ -484,7 +487,13 @@ export function DueBook({
                 />
               )}
               {view === "search" && (
-                <Search a={a} onOpenVehicle={openVehicle} />
+                <Search
+                  a={a}
+                  onOpenVehicle={openVehicle}
+                  reminderText={(ownerId) =>
+                    reminderMessage(data, ownerId, opts)
+                  }
+                />
               )}
               {view === "workload" && <Workload a={a} />}
               {view === "reminders" && (
