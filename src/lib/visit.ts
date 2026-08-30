@@ -39,6 +39,22 @@ export interface VisitModel {
   };
   interval_days: { p10: number; p90: number };
   /**
+   * Discrete-time hazard of a return, by 30-day bucket of elapsed absence.
+   * Fitted on completed gaps *and* the still-open spells the point model has to
+   * discard — see ml/return_model.py. Optional so an older table still loads.
+   */
+  return_hazard?: {
+    bucket_days: number;
+    hazard: number[];
+    metrics: {
+      model_brier: number;
+      baseline_brier: number;
+      n_person_periods: number;
+      n_censored_spells: number;
+      flat_rate: number;
+    };
+  };
+  /**
    * Keyed by case first: vehicle ids are only unique within a case, so `V01`
    * exists in all 25 of them. Flattening this would silently hand one workshop
    * another workshop's prediction.
@@ -70,6 +86,11 @@ export interface VisitPrediction {
   driftDays: number;
   /** They will not come back before something on this car is already due. */
   willDrift: boolean;
+  /** Days since their last visit, which is what the hazard conditions on. */
+  daysAway: number | null;
+  /** P(they walk in on their own within 30 / 60 days). Null pre-dates the table. */
+  pReturn30: number | null;
+  pReturn60: number | null;
   /** Where the number came from — shown in the UI so a stale tunnel is visible. */
   basis: string;
   reason: string;
@@ -110,6 +131,10 @@ export function joinPrediction(
     .filter((x) => x !== "\u2014")
     .sort();
   const earliestDue = dated[0] ?? null;
+  // what the hazard conditions on: how long they have already stayed away
+  const daysAway = lastVisit
+    ? differenceInCalendarDays(parseISO(today), parseISO(lastVisit))
+    : null;
   const driftDays = earliestDue
     ? differenceInCalendarDays(predicted, parseISO(earliestDue))
     : 0;
@@ -124,6 +149,9 @@ export function joinPrediction(
     earliestDue,
     driftDays,
     willDrift: driftDays > 0,
+    daysAway,
+    pReturn30: pReturn(daysAway ?? 0, 30, m),
+    pReturn60: pReturn(daysAway ?? 0, 60, m),
     basis,
     reason: !lastVisit
       ? `no service history, assuming the fleet median of ${FALLBACK_GAP_DAYS} days`
@@ -178,4 +206,35 @@ export function driftList(
     .map((v) => predictVisit(v, data.today, data.case_id, opts, m))
     .filter((p) => p.willDrift)
     .sort((a, b) => b.driftDays - a.driftDays);
+}
+
+/**
+ * P(a visit within `horizonDays`, given they are already `elapsedDays` away).
+ *
+ * Mirrors `p_return` in ml/return_model.py exactly — survival across the
+ * buckets the horizon covers, with partial buckets prorated so a 14-day
+ * question is not silently rounded up to 30. Kept in TypeScript as well as
+ * Python so the offline fallback answers the same question as the tunnel;
+ * src/lib/visit-check.ts asserts the two agree.
+ */
+export function pReturn(
+  elapsedDays: number,
+  horizonDays: number,
+  m: VisitModel = VISIT_MODEL,
+): number | null {
+  const hz = m.return_hazard;
+  if (!hz || horizonDays <= 0) return null;
+  const { hazard, bucket_days: bucket } = hz;
+  const last = hazard.length - 1;
+  let survive = 1;
+  let pos = elapsedDays;
+  const end = elapsedDays + horizonDays;
+  let k = Math.min(Math.floor(pos / bucket), last);
+  while (pos < end) {
+    const edge = k < last ? Math.min((k + 1) * bucket, end) : end;
+    survive *= (1 - hazard[k]) ** ((edge - pos) / bucket);
+    pos = edge;
+    k = Math.min(k + 1, last);
+  }
+  return Math.round((1 - survive) * 10000) / 10000;
 }

@@ -22,6 +22,8 @@ from datetime import timedelta
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
+
+import return_model
 from sklearn.ensemble import RandomForestRegressor
 
 from visit_model import FOREST, OUT, build_all, d, grid_for, load_cases, visits
@@ -100,6 +102,12 @@ class Prediction(BaseModel):
     predicted_visit: str
     gap_by_month: list[int]
     basis: str
+    # "will they come on their own?" — conditioned on how long they have already
+    # been away, so it stays informative for the half of the fleet whose point
+    # prediction has already been clamped to today.
+    days_away: int | None = None
+    p_return_30: float | None = None
+    p_return_60: float | None = None
 
 
 def predict_one(v: dict, today: str) -> Prediction:
@@ -119,11 +127,16 @@ def predict_one(v: dict, today: str) -> Prediction:
     # Right-censored: they have not come back yet, so a gap landing in the past
     # means "overdue a visit", never a date. The Next side clamps to today too.
     predicted = max(d(last_day) + timedelta(days=gap), d(today))
+    away = (d(today) - d(last_day)).days
+    hz = STATE["meta"].get("return_hazard")
     return Prediction(
         vehicle_id=v["id"], last_visit=last_day,
         predicted_gap_days=gap, predicted_visit=str(predicted),
         gap_by_month=grid,
         basis=f"{len(visits(v))} past visits, last {last_day}",
+        days_away=away,
+        p_return_30=return_model.p_return(hz["hazard"], away, 30) if hz else None,
+        p_return_60=return_model.p_return(hz["hazard"], away, 60) if hz else None,
     )
 
 
