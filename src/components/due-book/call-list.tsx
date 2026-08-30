@@ -3,8 +3,9 @@
 import { useState } from "react";
 import type { Analysis } from "@/lib/due-book-view";
 import type { CallSort } from "@/lib/engine";
-import { Chip, daysText, Plate, tk, tkS, WhatsAppButton } from "./format";
-import { ItemTable } from "./item-table";
+import { CallDetail, CallDetailSubtitle } from "./call-detail";
+import { DetailDrawer } from "./detail-drawer";
+import { Chip, daysText, Plate, tk, tkS } from "./format";
 
 export function CallList({
   a,
@@ -28,7 +29,7 @@ export function CallList({
 }) {
   const [filter, setFilter] = useState("");
   const [onlyOverdue, setOnlyOverdue] = useState(false);
-  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const [openId, setOpenId] = useState<string | null>(null);
 
   const q = filter.trim().toLowerCase();
   const rows = a.callList.filter((r) => {
@@ -40,12 +41,7 @@ export function CallList({
       .includes(q);
   });
 
-  const toggle = (id: string) =>
-    setExpanded((prev) => {
-      const next = new Set(prev);
-      if (!next.delete(id)) next.add(id);
-      return next;
-    });
+  const openRow = a.callList.find((r) => r.vehicle.id === openId) ?? null;
 
   return (
     <>
@@ -154,7 +150,6 @@ export function CallList({
               )}
               {rows.map((r, i) => {
                 const id = r.vehicle.id;
-                const open = expanded.has(id);
                 const overdue = r.items.filter(
                   (x) => x.status === "overdue",
                 ).length;
@@ -162,17 +157,17 @@ export function CallList({
                   (x) => x.status === "due_soon",
                 ).length;
                 const worst = overdue ? "overdue" : "due_soon";
-                return [
+                return (
                   <tr
                     key={id}
                     className={`callrow stripe ${worst}`}
-                    aria-expanded={open}
                     tabIndex={0}
-                    onClick={() => toggle(id)}
+                    aria-haspopup="dialog"
+                    onClick={() => setOpenId(id)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" || e.key === " ") {
                         e.preventDefault();
-                        toggle(id);
+                        setOpenId(id);
                       }
                     }}
                   >
@@ -214,55 +209,37 @@ export function CallList({
                     </td>
                     <td className="r money">{tkS(r.totalCost)}</td>
                     <td className="r score">{tkS(r.score)}</td>
-                  </tr>,
-                  open ? (
-                    <tr className="detail" key={`${id}-d`}>
-                      <td colSpan={7}>
-                        <div className="detail-in">
-                          <ItemTable statuses={r.items} compact />
-                          <div className="rowacts">
-                            <button
-                              type="button"
-                              className="btn sm primary"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onOpenVehicle(id);
-                              }}
-                            >
-                              Open vehicle page
-                            </button>
-                            <WhatsAppButton
-                              small
-                              phone={r.owner.phone}
-                              text={reminderText(r.owner.id)}
-                              label={`WhatsApp ${r.owner.name}`}
-                              // the row itself toggles on click
-                              onClick={(e) => e.stopPropagation()}
-                            />
-                            <button
-                              type="button"
-                              className="btn sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onCopyReminder(
-                                  r.owner.id,
-                                  `Copy reminder for ${r.owner.name}`,
-                                );
-                              }}
-                            >
-                              Copy text
-                            </button>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  ) : null,
-                ];
+                  </tr>
+                );
               })}
             </tbody>
           </table>
         </div>
       </div>
+
+      <DetailDrawer
+        open={openId !== null}
+        onOpenChange={(o) => !o && setOpenId(null)}
+        eyebrow={
+          openRow
+            ? `#${rows.findIndex((r) => r.vehicle.id === openRow.vehicle.id) + 1} on today's call list`
+            : ""
+        }
+        title={openRow?.owner.name ?? ""}
+        subtitle={openRow ? <CallDetailSubtitle row={openRow} /> : null}
+      >
+        {openRow && (
+          <CallDetail
+            row={openRow}
+            reminderText={reminderText}
+            onCopy={onCopyReminder}
+            onOpenVehicle={(vid) => {
+              setOpenId(null);
+              onOpenVehicle(vid);
+            }}
+          />
+        )}
+      </DetailDrawer>
 
       <p
         style={{

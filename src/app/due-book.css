@@ -967,3 +967,124 @@
 .dark .duebook .seg button[aria-pressed="true"] {
   color: #0e1214;
 }
+
+/* ── detail drawer ──────────────────────────────────────────────────────────
+   The panel is portalled to <body>, so it carries .duebook itself and these
+   rules sit at the top level rather than nested inside it. Slide distance is
+   overridden here because the base sheet only nudges 2.5rem. */
+.duebook.dd-panel {
+  display: flex;
+  flex-direction: column;
+  transition:
+    transform 0.22s cubic-bezier(0.32, 0.72, 0, 1),
+    opacity 0.22s ease;
+}
+.duebook.dd-panel[data-starting-style],
+.duebook.dd-panel[data-ending-style] {
+  transform: translateX(100%);
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .duebook.dd-panel {
+    transition: none;
+  }
+}
+.duebook .dd-head {
+  padding: 16px 20px 14px;
+  border-bottom: 1px solid var(--line);
+  flex: none;
+}
+.duebook .dd-title {
+  font-family: var(--sans);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  font-variation-settings: "wdth" 90;
+  line-height: 1.2;
+  margin-top: 3px;
+}
+.duebook .dd-sub {
+  margin-top: 7px;
+  font-size: 13px;
+  color: var(--ink-2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.duebook .dd-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+}
+.duebook .dd-foot {
+  flex: none;
+  padding: 12px 20px;
+  border-top: 1px solid var(--line);
+  background: var(--surface-2);
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ── stacked item cards (drawer) ───────────────────────────────────────────── */
+.duebook .itemcards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.duebook .itemcard {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+}
+.duebook .ic-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.duebook .ic-top b {
+  font-size: 14px;
+}
+.duebook .ic-facts {
+  display: flex;
+  gap: 22px;
+  flex-wrap: wrap;
+  margin: 11px 0 0;
+}
+.duebook .ic-facts div {
+  min-width: 0;
+}
+.duebook .ic-facts dt {
+  font-size: 10px;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--ink-3);
+  font-variation-settings: "wdth" 82;
+}
+.duebook .ic-facts dd {
+  margin: 2px 0 0;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+}
+.duebook .ic-math dd {
+  font-weight: 400;
+  font-size: 11.5px;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+.duebook .ic-why {
+  margin: 11px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+.duebook .ic-why .eyebrow {
+  display: block;
+  margin-bottom: 3px;
+}
