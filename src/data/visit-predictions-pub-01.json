@@ -1,0 +1,284 @@
+{
+  "case_id": "PUB-01",
+  "today": "2026-08-30",
+  "metrics": {
+    "n_gaps": 56,
+    "n_vehicles": 42,
+    "cv": "leave-one-vehicle-out",
+    "baseline_median_days": 84.0,
+    "baseline_mae_days": 58.2,
+    "model_mae_days": 46.2,
+    "permuted_mae_days": 63.9,
+    "permuted_best_mae_days": 58.9,
+    "permutations_beating_model": 0
+  },
+  "interval_days": {
+    "p10": -65,
+    "p90": 72
+  },
+  "features": [
+    "km_per_day",
+    "n_items",
+    "n_distance",
+    "n_period",
+    "n_fixed",
+    "annual_burden_bdt",
+    "prev_gap_days",
+    "visit_month",
+    "cost_at_visit_bdt"
+  ],
+  "vehicles": {
+    "V01": {
+      "last_visit": "2026-07-04",
+      "gap_by_month": [108, 108, 83, 74, 71, 70, 69, 169, 166, 157, 144, 134],
+      "predicted_gap_days": 69,
+      "predicted_visit": "2026-09-11"
+    },
+    "V02": {
+      "last_visit": "2026-04-30",
+      "gap_by_month": [70, 70, 38, 31, 29, 28, 26, 135, 139, 133, 127, 118],
+      "predicted_gap_days": 31,
+      "predicted_visit": "2026-05-31"
+    },
+    "V03": {
+      "last_visit": "2026-05-25",
+      "gap_by_month": [102, 102, 81, 70, 67, 66, 64, 139, 129, 122, 108, 95],
+      "predicted_gap_days": 67,
+      "predicted_visit": "2026-07-31"
+    },
+    "V04": {
+      "last_visit": "2026-03-11",
+      "gap_by_month": [107, 107, 82, 73, 71, 70, 68, 164, 163, 156, 142, 132],
+      "predicted_gap_days": 82,
+      "predicted_visit": "2026-06-01"
+    },
+    "V05": {
+      "last_visit": "2026-07-24",
+      "gap_by_month": [107, 107, 90, 76, 73, 72, 71, 176, 172, 162, 152, 143],
+      "predicted_gap_days": 71,
+      "predicted_visit": "2026-10-03"
+    },
+    "V06": {
+      "last_visit": "2026-06-12",
+      "gap_by_month": [62, 62, 37, 34, 32, 31, 29, 134, 138, 132, 123, 113],
+      "predicted_gap_days": 31,
+      "predicted_visit": "2026-07-13"
+    },
+    "V07": {
+      "last_visit": "2026-03-13",
+      "gap_by_month": [104, 104, 79, 70, 67, 66, 64, 133, 124, 119, 110, 99],
+      "predicted_gap_days": 79,
+      "predicted_visit": "2026-05-31"
+    },
+    "V08": {
+      "last_visit": "2026-07-16",
+      "gap_by_month": [76, 76, 43, 35, 32, 31, 29, 137, 141, 135, 127, 119],
+      "predicted_gap_days": 29,
+      "predicted_visit": "2026-08-14"
+    },
+    "V09": {
+      "last_visit": "2026-05-28",
+      "gap_by_month": [113, 113, 82, 67, 65, 63, 62, 172, 168, 159, 144, 135],
+      "predicted_gap_days": 65,
+      "predicted_visit": "2026-08-01"
+    },
+    "V10": {
+      "last_visit": "2026-08-02",
+      "gap_by_month": [100, 100, 79, 72, 69, 68, 67, 123, 110, 104, 92, 81],
+      "predicted_gap_days": 123,
+      "predicted_visit": "2026-12-03"
+    },
+    "V11": {
+      "last_visit": "2026-02-26",
+      "gap_by_month": [121, 121, 101, 85, 82, 81, 79, 184, 177, 167, 151, 141],
+      "predicted_gap_days": 121,
+      "predicted_visit": "2026-06-27"
+    },
+    "V12": {
+      "last_visit": "2026-08-03",
+      "gap_by_month": [130, 130, 94, 78, 75, 74, 73, 173, 174, 167, 158, 149],
+      "predicted_gap_days": 173,
+      "predicted_visit": "2027-01-23"
+    },
+    "V13": {
+      "last_visit": "2026-07-10",
+      "gap_by_month": [129, 129, 92, 76, 73, 72, 70, 175, 173, 166, 152, 143],
+      "predicted_gap_days": 70,
+      "predicted_visit": "2026-09-18"
+    },
+    "V14": {
+      "last_visit": "2026-02-13",
+      "gap_by_month": [69, 69, 44, 39, 37, 36, 34, 100, 93, 88, 75, 64],
+      "predicted_gap_days": 69,
+      "predicted_visit": "2026-04-23"
+    },
+    "V15": {
+      "last_visit": "2026-04-09",
+      "gap_by_month": [72, 72, 56, 51, 49, 48, 45, 152, 150, 141, 133, 124],
+      "predicted_gap_days": 51,
+      "predicted_visit": "2026-05-30"
+    },
+    "V16": {
+      "last_visit": "2026-04-25",
+      "gap_by_month": [84, 84, 48, 41, 39, 38, 35, 142, 147, 142, 134, 126],
+      "predicted_gap_days": 41,
+      "predicted_visit": "2026-06-05"
+    },
+    "V17": {
+      "last_visit": "2026-07-02",
+      "gap_by_month": [130, 130, 94, 78, 74, 73, 72, 187, 187, 178, 162, 150],
+      "predicted_gap_days": 72,
+      "predicted_visit": "2026-09-12"
+    },
+    "V18": {
+      "last_visit": "2026-05-22",
+      "gap_by_month": [73, 73, 39, 29, 27, 26, 24, 136, 137, 129, 120, 112],
+      "predicted_gap_days": 27,
+      "predicted_visit": "2026-06-18"
+    },
+    "V19": {
+      "last_visit": "2026-07-09",
+      "gap_by_month": [83, 83, 53, 46, 44, 43, 41, 144, 144, 137, 128, 121],
+      "predicted_gap_days": 41,
+      "predicted_visit": "2026-08-19"
+    },
+    "V20": {
+      "last_visit": "2026-06-06",
+      "gap_by_month": [101, 101, 79, 71, 68, 67, 66, 167, 166, 159, 144, 131],
+      "predicted_gap_days": 67,
+      "predicted_visit": "2026-08-12"
+    },
+    "V21": {
+      "last_visit": "2026-07-29",
+      "gap_by_month": [68, 68, 41, 35, 32, 31, 29, 136, 141, 136, 130, 119],
+      "predicted_gap_days": 29,
+      "predicted_visit": "2026-08-27"
+    },
+    "V22": {
+      "last_visit": "2026-08-06",
+      "gap_by_month": [104, 104, 80, 70, 68, 67, 66, 164, 165, 159, 148, 137],
+      "predicted_gap_days": 164,
+      "predicted_visit": "2027-01-17"
+    },
+    "V23": {
+      "last_visit": "2026-05-23",
+      "gap_by_month": [103, 103, 79, 68, 65, 64, 62, 168, 169, 163, 153, 141],
+      "predicted_gap_days": 65,
+      "predicted_visit": "2026-07-27"
+    },
+    "V24": {
+      "last_visit": "2026-04-09",
+      "gap_by_month": [117, 117, 83, 68, 65, 64, 63, 170, 168, 160, 147, 138],
+      "predicted_gap_days": 68,
+      "predicted_visit": "2026-06-16"
+    },
+    "V25": {
+      "last_visit": "2026-04-19",
+      "gap_by_month": [75, 75, 47, 38, 36, 35, 33, 147, 147, 137, 125, 117],
+      "predicted_gap_days": 38,
+      "predicted_visit": "2026-05-27"
+    },
+    "V26": {
+      "last_visit": "2026-05-19",
+      "gap_by_month": [70, 70, 40, 33, 30, 29, 27, 137, 142, 137, 129, 118],
+      "predicted_gap_days": 30,
+      "predicted_visit": "2026-06-18"
+    },
+    "V27": {
+      "last_visit": "2026-06-03",
+      "gap_by_month": [85, 85, 51, 42, 39, 38, 35, 150, 153, 145, 133, 124],
+      "predicted_gap_days": 38,
+      "predicted_visit": "2026-07-11"
+    },
+    "V28": {
+      "last_visit": "2026-05-08",
+      "gap_by_month": [77, 77, 56, 55, 55, 54, 51, 107, 97, 92, 79, 70],
+      "predicted_gap_days": 55,
+      "predicted_visit": "2026-07-02"
+    },
+    "V29": {
+      "last_visit": "2026-04-01",
+      "gap_by_month": [74, 74, 56, 46, 43, 42, 40, 151, 149, 139, 130, 121],
+      "predicted_gap_days": 46,
+      "predicted_visit": "2026-05-17"
+    },
+    "V30": {
+      "last_visit": "2026-03-10",
+      "gap_by_month": [81, 81, 50, 42, 40, 39, 37, 146, 147, 139, 129, 121],
+      "predicted_gap_days": 50,
+      "predicted_visit": "2026-04-29"
+    },
+    "V31": {
+      "last_visit": "2026-07-11",
+      "gap_by_month": [128, 128, 92, 75, 73, 71, 70, 175, 172, 165, 150, 140],
+      "predicted_gap_days": 70,
+      "predicted_visit": "2026-09-19"
+    },
+    "V32": {
+      "last_visit": "2026-07-14",
+      "gap_by_month": [88, 88, 60, 51, 49, 47, 44, 150, 151, 142, 133, 124],
+      "predicted_gap_days": 44,
+      "predicted_visit": "2026-08-27"
+    },
+    "V33": {
+      "last_visit": "2026-07-09",
+      "gap_by_month": [108, 108, 80, 69, 66, 65, 64, 171, 172, 167, 154, 142],
+      "predicted_gap_days": 64,
+      "predicted_visit": "2026-09-11"
+    },
+    "V34": {
+      "last_visit": "2026-07-30",
+      "gap_by_month": [86, 86, 48, 39, 37, 36, 33, 143, 145, 138, 128, 120],
+      "predicted_gap_days": 33,
+      "predicted_visit": "2026-09-01"
+    },
+    "V35": {
+      "last_visit": "2026-06-17",
+      "gap_by_month": [105, 105, 80, 69, 66, 65, 63, 132, 124, 119, 107, 96],
+      "predicted_gap_days": 65,
+      "predicted_visit": "2026-08-21"
+    },
+    "V36": {
+      "last_visit": "2026-07-27",
+      "gap_by_month": [76, 76, 44, 35, 33, 32, 29, 137, 140, 135, 127, 118],
+      "predicted_gap_days": 29,
+      "predicted_visit": "2026-08-25"
+    },
+    "V37": {
+      "last_visit": "2026-03-13",
+      "gap_by_month": [74, 74, 40, 31, 29, 28, 26, 140, 141, 133, 122, 113],
+      "predicted_gap_days": 40,
+      "predicted_visit": "2026-04-22"
+    },
+    "V38": {
+      "last_visit": "2026-06-12",
+      "gap_by_month": [78, 78, 45, 35, 32, 31, 29, 141, 144, 137, 128, 120],
+      "predicted_gap_days": 31,
+      "predicted_visit": "2026-07-13"
+    },
+    "V39": {
+      "last_visit": "2026-08-04",
+      "gap_by_month": [129, 129, 94, 78, 75, 73, 72, 175, 175, 167, 158, 148],
+      "predicted_gap_days": 175,
+      "predicted_visit": "2027-01-26"
+    },
+    "V40": {
+      "last_visit": "2026-05-27",
+      "gap_by_month": [71, 71, 52, 42, 40, 39, 37, 153, 151, 140, 129, 120],
+      "predicted_gap_days": 40,
+      "predicted_visit": "2026-07-06"
+    },
+    "V41": {
+      "last_visit": "2026-04-23",
+      "gap_by_month": [85, 85, 54, 47, 46, 45, 42, 145, 147, 140, 133, 126],
+      "predicted_gap_days": 47,
+      "predicted_visit": "2026-06-09"
+    },
+    "V42": {
+      "last_visit": "2026-05-30",
+      "gap_by_month": [118, 118, 85, 70, 67, 66, 65, 170, 169, 161, 152, 143],
+      "predicted_gap_days": 67,
+      "predicted_visit": "2026-08-05"
+    }
+  }
+}
