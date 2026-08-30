@@ -175,8 +175,14 @@ export function computeItem(
   } else {
     const last = lastDone(v, item.name);
     const every = item.every_km ?? 0;
-    const dueKm = (last?.km ?? 0) + every;
     const nowKm = currentKm(v);
+    // With no past service to count from, count from the odometer we do have.
+    // Falling back to 0 would put the due point at `every_km` absolute — on a
+    // car already reading 139,157 km that is ~2,000 days "overdue" and it would
+    // head the call list. Every seeded distance item has exactly one history
+    // row, so this branch only fires on a vehicle entered by hand.
+    const startKm = last?.km ?? nowKm;
+    const dueKm = startKm + every;
     const rate = kmPerDay(v, opts.kmBasis);
     if (rate <= 0) {
       // no usage: the item can never come due — report it, don't divide
@@ -195,10 +201,13 @@ export function computeItem(
     }
     const daysToDue = Math.round((dueKm - nowKm) / rate);
     dueDate = addDays(todayDate, daysToDue);
+    const from = last
+      ? `last done at ${num(last.km ?? 0)} km`
+      : `no history — counted from the current reading at ${num(startKm)} km`;
     reason =
       dueKm >= nowKm
-        ? `due at ${num(dueKm)} km, now ${num(nowKm)} — ${num(dueKm - nowKm)} km left at ${rate.toFixed(1)} km/day`
-        : `due at ${num(dueKm)} km, now ${num(nowKm)} — ${num(nowKm - dueKm)} km past, at ${rate.toFixed(1)} km/day`;
+        ? `${from}, every ${num(every)} km → due at ${num(dueKm)} km, now ${num(nowKm)} — ${num(dueKm - nowKm)} km left at ${rate.toFixed(1)} km/day`
+        : `${from}, every ${num(every)} km → due at ${num(dueKm)} km, now ${num(nowKm)} — ${num(nowKm - dueKm)} km past, at ${rate.toFixed(1)} km/day`;
   }
 
   const daysLeft = differenceInCalendarDays(dueDate, todayDate);

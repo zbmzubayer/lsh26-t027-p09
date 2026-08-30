@@ -186,6 +186,61 @@ assert.deepStrictEqual(
 console.log("engine-check: all assertions passed");
 
 /* ---------------------------------------------------------------------------
+ * A vehicle entered by hand: one odometer reading, no service history yet.
+ * Nothing in the 25 published cases looks like this — every distance and period
+ * item there carries exactly one history row — but /api/run takes arbitrary
+ * cases, and "add a vehicle" creates exactly this shape. With no past service
+ * to count from, a distance item must count from the reading on the clock, not
+ * from zero.
+ * ------------------------------------------------------------------------ */
+{
+  const fresh: CaseData = {
+    case_id: "FRESH",
+    today: "2026-08-30",
+    owners: [{ id: "O01", name: "Walk-in", phone: "01700000000" }],
+    vehicles: [
+      {
+        id: "V43",
+        owner_id: "O01",
+        model: "Toyota Axio",
+        plate: "Dhaka Metro Ga 99-9999",
+        odometer_readings: [{ date: "2026-08-30", km: 139157 }],
+        service_items: [
+          {
+            name: "Tyres",
+            rule: "distance_km",
+            every_km: 40000,
+            cost_bdt: "32000.00",
+          },
+          {
+            name: "Engine oil",
+            rule: "period_months",
+            every_months: 3,
+            cost_bdt: "3500.00",
+          },
+        ],
+        service_history: [],
+      },
+    ],
+  };
+  const fv = fresh.vehicles[0];
+  const tyres = computeItem(fv, fv.service_items[0], fresh.today);
+  // 139,157 + 40,000 = 179,157 km away at the fleet median 51 km/day (one
+  // reading, so no rate of its own) => 784 days out, comfortably fine.
+  assert.strictEqual(tyres.status, "fine", "a new car's tyres are not overdue");
+  assert.strictEqual(tyres.daysLeft, 784);
+  assert.ok(
+    tyres.reason.includes("counted from the current reading at 139,157 km"),
+    `reason should name the fallback, got: ${tyres.reason}`,
+  );
+  // period items with no history anchor on the first reading, as before
+  const oil = computeItem(fv, fv.service_items[1], fresh.today);
+  assert.strictEqual(oil.dueDate, "2026-11-30");
+  assert.strictEqual(oil.status, "fine");
+  console.log("engine-check: hand-entered vehicle (no history) behaves");
+}
+
+/* ---------------------------------------------------------------------------
  * Phase 5.5 — the same PUB-01 assertions against the case assembled out of
  * Postgres. If the DB assembly ever drifts from the published file, the call
  * list is being ranked on different data than it claims, and that shows up
