@@ -283,6 +283,21 @@ export function VehicleDetail({
                   </span>
                 )}
               </div>
+              {visit.pReturn30 != null && (
+                <p style={{ marginTop: 8, fontSize: 13 }}>
+                  <b className="num">
+                    {Math.round((1 - visit.pReturn30) * 100)}%
+                  </b>{" "}
+                  chance they do <b>not</b> come on their own in the next 30
+                  days
+                  {visit.daysAway != null && (
+                    <span style={{ color: "var(--ink-3)" }}>
+                      {" "}
+                      · last seen {visit.daysAway} days ago
+                    </span>
+                  )}
+                </p>
+              )}
               <p className="why" style={{ marginTop: 6 }}>
                 {visit.reason}
               </p>
