@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { Analysis } from "@/lib/due-book-view";
 import { SERVICE_CATALOGUE } from "@/lib/service-catalogue";
+import type { VisitPrediction } from "@/lib/visit";
 import { km, Plate, ruleLabel, tkS } from "./format";
 import { ItemTable } from "./item-table";
 import { Sparkline } from "./vehicles";
@@ -21,6 +22,11 @@ export function VehicleDetail({
   onRecord,
   onOdometer,
   onAddItem,
+  onCheckVisit,
+  visit,
+  visitSource,
+  visitPending,
+  visitError,
 }: {
   a: Analysis;
   vehicleId: string;
@@ -30,6 +36,11 @@ export function VehicleDetail({
   onRecord: (itemName: string, date: string, kmValue?: number) => void;
   onOdometer: (kmValue: number) => void;
   onAddItem: (name: string, dueDate?: string) => void;
+  onCheckVisit: () => void;
+  visit: VisitPrediction | null;
+  visitSource: "live" | "bundled" | null;
+  visitPending: boolean;
+  visitError: string | null;
 }) {
   const v = a.vehicles.find((x) => x.vehicle.id === vehicleId);
   const [itemName, setItemName] = useState(
@@ -219,6 +230,82 @@ export function VehicleDetail({
               ). Fixed dates and time-based intervals do not move.
             </p>
           </div>
+        </div>
+      </div>
+
+      <div className="panel">
+        <div className="panel-hd">
+          <h2>When will they be back?</h2>
+          <span className="note">
+            the engine says when the work is due; this says when the owner
+            actually turns up
+          </span>
+        </div>
+        <div className="panel-bd">
+          <button
+            type="button"
+            className="btn primary"
+            onClick={onCheckVisit}
+            disabled={visitPending}
+          >
+            {visitPending ? "Checking…" : "Check next visit"}
+          </button>
+
+          {visitError && (
+            <output className="flash bad" style={{ marginTop: 10 }}>
+              {visitError}
+            </output>
+          )}
+
+          {visit && !visitError && (
+            <div style={{ marginTop: 12 }}>
+              <div
+                style={{
+                  display: "flex",
+                  gap: 10,
+                  alignItems: "baseline",
+                  flexWrap: "wrap",
+                }}
+              >
+                <span className="eyebrow">Expected back</span>
+                <b className="num" style={{ fontSize: 19 }}>
+                  {visit.predictedVisit}
+                </b>
+                {visit.willDrift ? (
+                  <span className="chip overdue">
+                    <span className="dot" />
+                    {visit.driftDays} days after {visit.earliestDue} is due
+                  </span>
+                ) : (
+                  <span className="chip fine">
+                    <span className="dot" />
+                    arrives before anything is due
+                  </span>
+                )}
+              </div>
+              <p className="why" style={{ marginTop: 6 }}>
+                {visit.reason}
+              </p>
+              <p
+                style={{ marginTop: 4, fontSize: 11.5, color: "var(--ink-3)" }}
+              >
+                80% window {visit.windowFrom} → {visit.windowTo} · {visit.basis}{" "}
+                · {visitSource === "bundled" ? "offline model" : "live model"}
+              </p>
+              {visit.willDrift && (
+                <p
+                  style={{
+                    marginTop: 8,
+                    fontSize: 12.5,
+                    color: "var(--crit-ink)",
+                  }}
+                >
+                  They will not come back on their own before this is due — this
+                  is a car the phone call actually changes.
+                </p>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

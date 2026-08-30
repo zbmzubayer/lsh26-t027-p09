@@ -13,9 +13,11 @@ import {
   reminderMessage,
   vehicleStatuses,
 } from "@/lib/engine";
+import type { VisitPrediction } from "@/lib/visit";
 import { CallList } from "./call-list";
 import { IntakeForm, type IntakePayload } from "./intake-form";
 import { Method } from "./method";
+import { Search } from "./search";
 import type { Flash } from "./vehicle-detail";
 import { VehicleDetail } from "./vehicle-detail";
 import { VehicleGrid } from "./vehicles";
@@ -25,6 +27,7 @@ type View =
   | "call"
   | "vehicles"
   | "vehicle"
+  | "search"
   | "workload"
   | "reminders"
   | "method";
@@ -32,6 +35,7 @@ type View =
 const TABS: [View, string][] = [
   ["call", "Call list"],
   ["vehicles", "Vehicles"],
+  ["search", "Search"],
   ["workload", "Workload"],
   ["reminders", "Reminders"],
   ["method", "Method"],
@@ -184,6 +188,23 @@ export function DueBook({
     onError: (e: Error) => setIntakeError(e.message),
   });
 
+  /**
+   * "When will they be back?" for the open vehicle. Kept here rather than in
+   * VehicleDetail so that component stays presentational, per ml/HANDOFF.md.
+   */
+  const visit = useMutation({
+    mutationFn: (body: { vehicleId: string }) =>
+      json<{
+        source: "live" | "bundled";
+        note?: string;
+        predictions: VisitPrediction[];
+      }>("/api/visit", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(body),
+      }),
+  });
+
   const copy = async (text: string, label: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -201,6 +222,7 @@ export function DueBook({
   const openVehicle = (id: string) => {
     setVehicleId(id);
     setFlash(null);
+    visit.reset(); // never show one car's predicted date under another's plate
     setView("vehicle");
   };
 
@@ -454,7 +476,15 @@ export function DueBook({
                   onAddItem={(name, dueDate) =>
                     write.mutate({ kind: "item", name, dueDate })
                   }
+                  onCheckVisit={() => vehicleId && visit.mutate({ vehicleId })}
+                  visit={visit.data?.predictions[0] ?? null}
+                  visitSource={visit.data?.source ?? null}
+                  visitPending={visit.isPending}
+                  visitError={(visit.error as Error | null)?.message ?? null}
                 />
+              )}
+              {view === "search" && (
+                <Search a={a} onOpenVehicle={openVehicle} />
               )}
               {view === "workload" && <Workload a={a} />}
               {view === "reminders" && (
