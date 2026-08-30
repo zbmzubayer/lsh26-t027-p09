@@ -15,7 +15,8 @@
     "ml": "uv run --with-requirements ml/requirements.txt python ml/visit_model.py",
     "check:visit": "tsx src/lib/visit-check.ts",
     "ml:serve": "uv run --with-requirements ml/requirements.txt uvicorn serve:app --app-dir ml --host 127.0.0.1 --port 8010",
-    "ml:export": "tsx ml/export-cases.ts"
+    "ml:export": "tsx ml/export-cases.ts",
+    "cases": "tsx scripts/run-cases.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
