@@ -48,7 +48,12 @@ almost every car in it.
 **Beyond the brief**
 
 - **8-week workload preview**, with the overdue backlog kept separate so a week
-  is not misread. Click a week to read its jobs.
+  is not misread. Click a week to read its jobs. A second series says what will
+  actually _land_: 200 seeded draws off the return hazard pick each owner's
+  visit day, and the rule engine says what gets done once they arrive. Rewinding
+  every case eight weeks and forecasting forward gives MAE 4.8 jobs per case
+  against 6.7 for "everyone arrives on their due date", and the 80% band covered
+  the truth in 20 of 25 cases.
 - **New odometer reading** — every distance estimate recomputes, and the app
   names the km/day change and each estimate that moved.
 - **Copy-ready reminder per owner**, merged across their cars, with a WhatsApp
@@ -57,10 +62,18 @@ almost every car in it.
   gaps says when the customer will actually turn up, which is a different
   question from when work is due. 41.5 days MAE against a 62.5-day baseline,
   validated leave-one-workshop-out.
+- **Ranking by who will _not_ come on their own** — a discrete-time hazard over
+  9,952 person-periods answers "will they turn up unprompted in the next 30
+  days?", and the call list can weight every row by the complement, so a call
+  that changes an outcome outranks a customer who was walking in anyway. Off by
+  default: every published number is measured without it. Leave-one-case-out
+  Brier 0.12583 against 0.13143 for the flat fleet rate.
 - **Method tab** — every number on screen, derived, with a worked example.
-- **Walk-in intake**, catalogue-driven service fitting, search across name,
-  phone, plate, model and id, and multi-user auth with each account pinned to
-  one workshop.
+- **Walk-in intake**, catalogue-driven service fitting, and search across name,
+  phone, plate, model and id.
+- **Accounts** — each one pinned to a single workshop. A manager adds colleagues
+  from the dashboard, anyone can change their own password, and doing so ends
+  every other session holding that account.
 
 ## Quick start
 
@@ -72,11 +85,12 @@ npm run db:push
 npm run dev               # http://localhost:3000
 ```
 
-Register at `/register`, then assign the account a workshop —
-`UPDATE "User" SET "caseId" = 'PUB-02' WHERE email = '…'`. There is no admin UI
-yet, and a new account will tell you it has no workshop rather than showing you
-someone else's. Avoid `PUB-01`: it is the pinned fixture the self-check asserts
-against.
+Register at `/register`, then make that account the workshop's first manager —
+`UPDATE "User" SET "caseId" = 'PUB-02', role = 'manager' WHERE email = '…'`.
+There is no bootstrap flow, and a new account will tell you it has no workshop
+rather than showing you someone else's. Everyone after the first is added from
+**Account → Add someone to this workshop**. Avoid `PUB-01`: it is the pinned
+fixture the self-check asserts against.
 
 ### Answer a case with no browser and no database
 
@@ -146,7 +160,9 @@ Module-by-module documentation lives in [`docs/`](docs/README.md).
 | `npm run ml`                                    | Retrain the visit predictor                         |
 | `npm run ml:serve`                              | The prediction service on 127.0.0.1:8010            |
 | `npm run check:visit`                           | Assert the bundled model and the live service agree |
+| `npm run check:auth`                            | Session retirement and the account forms            |
 | `npx tsx src/lib/engine-check.ts`               | The domain self-check                               |
+| `npx tsx src/lib/workload-check.ts`             | Backtest the probabilistic workload forecast        |
 
 ## Verification
 
@@ -154,6 +170,9 @@ Module-by-module documentation lives in [`docs/`](docs/README.md).
 npx tsx src/lib/engine-check.ts   # the documented PUB-01 answers, from the
                                   # fixture AND from the database
 npm run check:visit               # the model's silent-wrong-answer bugs
+npm run check:auth                # session retirement and the account forms
+npx tsx src/lib/workload-check.ts # the forecast, backtested against what
+                                  # actually happened
 npx tsc --noEmit && npm run lint && npm run build
 ```
 
@@ -175,8 +194,10 @@ src/lib/engine.ts        the domain — pure, no I/O, no clock
 src/lib/case-schema.ts   the Zod trust boundary
 src/lib/case-db.ts       Postgres <-> the one shape
 src/lib/visit.ts         when the customer actually turns up
+src/lib/workload-sim.ts  what will land, not what is due
 src/app/api/             seven thin routes
 src/components/due-book/ the dashboard
+src/components/account/  the account panel and staff management
 ml/                      the Python trainer and prediction service
 docs/                    module documentation
 plans/                   feature list and planning notes
@@ -189,7 +210,9 @@ Stated plainly rather than hidden:
 - The database cannot be rebuilt from a clone — the public data drop is not
   committed and there is no seed script.
 - No edit or delete for customers, vehicles or items, and no onboarding for a
-  brand-new empty workshop.
+  brand-new empty workshop. A manager can add a colleague but not remove one,
+  change their role or reset their password — that still needs a database
+  statement.
 - Verification is `assert`-based self-checks run manually, not a framework suite
   in CI.
 - The visit model's 80% window is roughly ±65 days, and predictions are clamped

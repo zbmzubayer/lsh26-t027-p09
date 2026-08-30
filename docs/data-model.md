@@ -33,6 +33,10 @@ workshop another workshop's data, silently.
 | `ServiceItem`     | uuid7, `@@unique([caseId, vehicleId, name])` | `rule` enum + exactly one of `dueDate` / `everyMonths` / `everyKm`; `costBdt`                          |
 | `ServiceRecord`   | uuid7                                        | History: date, km (null for period items), cost                                                        |
 
+`StaffRole` is `manager | staff`, and is **not** called `owner` — `Owner` is the
+customer in this schema, so that name would mean the opposite thing right beside
+the permission check that uses it.
+
 `User.caseId` is nullable: the seed predates it and `/api/run` needs no user. An
 account with no workshop is _told so_ rather than defaulted into someone else's
 book — see `src/app/dashboard/page.tsx`.

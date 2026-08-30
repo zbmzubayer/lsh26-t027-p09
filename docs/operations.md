@@ -46,13 +46,20 @@ Then register at `/register`. A new account has **no workshop** and will say so
 
 ## Runbooks
 
-### Assign a workshop to an account
+### Make the first manager of a workshop
 
-`User.caseId` is set by hand; there is no admin UI.
+A manager can add colleagues from the Account tab, but the **first** account of
+a workshop has to be made by hand — there is no bootstrap flow.
 
 ```sql
-UPDATE "User" SET "caseId" = 'PUB-02' WHERE email = 'someone@example.com';
+UPDATE "User"
+SET "caseId" = 'PUB-02', role = 'manager'
+WHERE email = 'someone@example.com';
 ```
+
+Everyone after that is added from the dashboard: **Account → Add someone to this
+workshop**. New accounts are always `staff`; there is no way to mint a second
+manager from the UI yet.
 
 **Do not assign `PUB-01`.** It is the pinned fixture that `engine-check.ts`
 asserts against; recording a service against it through the UI would invalidate
@@ -116,8 +123,12 @@ Carried from `evaluation-manifest.json`, and honest:
   re-seeding by hand.
 - **PUB-01 is pinned.** Writing to it through the UI invalidates
   `engine-check.ts`.
-- **No edit or delete** for customers, vehicles or service items, and no
-  onboarding for a brand-new empty workshop.
+- **No edit or delete** for customers, vehicles or service items. A manager can
+  add a colleague but not remove one, change their role, or reset their password
+  — that still needs a database statement, and doing it properly needs a
+  last-manager guard.
+- **No bootstrap for a brand-new workshop.** The first manager is assigned by
+  hand; public registration is still open and grants nothing.
 - **Verification is manual self-checks,** not a framework suite in CI.
 - **The ngrok URL changes on every restart,** and a stale one degrades silently
   (visibly, in the UI) to the bundled model.

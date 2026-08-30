@@ -82,15 +82,16 @@ distance-based item close enough to shift").
 
 ## Tabs
 
-| Tab           | Component                           | What it does                                                                                                                                                                      |
-| ------------- | ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Call list** | `call-list.tsx` → `call-detail.tsx` | The ranked daily list: owner, phone, vehicle, items due, reason, and the score arithmetic. Filter by text, "overdue only" toggle, three sort modes. A row opens the detail drawer |
-| **Vehicles**  | `vehicles.tsx`                      | Every vehicle as a card, worst first, with an odometer sparkline                                                                                                                  |
-| **Search**    | `search.tsx`                        | Look a customer up by name, phone, plate, model or vehicle id; everything they own in one place, with a per-owner "when will they be back" call                                   |
-| **Workload**  | `workload.tsx`                      | The 8-week preview. Backlog tile is separate from the weekly bars; click a week to read its jobs                                                                                  |
-| **Reminders** | `workload.tsx` (`Reminders`)        | One copy-ready message per owner in call-list order, with a copy button and a `wa.me` deep link                                                                                   |
-| **Method**    | `method.tsx`                        | How every number is derived, the ranking formula, a worked example of the top-ranked vehicle, and the answers JSON for the whole case                                             |
-| **Vehicle**   | `vehicle-detail.tsx`                | Not a tab — reached by clicking a row                                                                                                                                             |
+| Tab           | Component                           | What it does                                                                                                                                                                                 |
+| ------------- | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Call list** | `call-list.tsx` → `call-detail.tsx` | The ranked daily list: owner, phone, vehicle, items due, reason, and the score arithmetic. Filter by text, "overdue only" toggle, three sort modes. A row opens the detail drawer            |
+| **Vehicles**  | `vehicles.tsx`                      | Every vehicle as a card, worst first, with an odometer sparkline                                                                                                                             |
+| **Search**    | `search.tsx`                        | Look a customer up by name, phone, plate, model or vehicle id; everything they own in one place, with a per-owner "when will they be back" call                                              |
+| **Workload**  | `workload.tsx`                      | The 8-week preview. Backlog tile is separate from the weekly bars; click a week to read its jobs                                                                                             |
+| **Reminders** | `workload.tsx` (`Reminders`)        | One copy-ready message per owner in call-list order, with a copy button and a `wa.me` deep link                                                                                              |
+| **Method**    | `method.tsx`                        | How every number is derived, the ranking formula, a worked example of the top-ranked vehicle, and the answers JSON. Opens in the detail drawer rather than as a tab                          |
+| **Account**   | `components/account/account.tsx`    | Who you are, change your password, and — for a manager — the workshop's accounts and a form to add one. The only view that needs no case data, so it renders while the book is still loading |
+| **Vehicle**   | `vehicle-detail.tsx`                | Not a tab — reached by clicking a row                                                                                                                                                        |
 
 ## The vehicle page
 

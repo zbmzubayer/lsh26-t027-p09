@@ -79,6 +79,34 @@ the file exists to make:
 | No predicted visit in the past                                                             | Censoring                                                                      |
 | Brier < baseline Brier; no hazard equals 1.0; horizons monotonic; censored spells retained | The hazard model's equivalents                                                 |
 
+## `src/lib/auth-check.ts` — accounts
+
+```bash
+npm run check:auth
+```
+
+No database and no request. It pins the two things that are silently wrong when
+they break:
+
+- **`sessionIsStale(iat, passwordChangedAt)`** — false when the password has
+  never changed, true for a token issued before a change, false for one issued
+  after, **false for the cookie the change itself re-issued** (the millisecond
+  trap: `iat` is whole seconds, `passwordChangedAt` is not), and true when a
+  token carries no `iat` at all. Too strict logs a user out of their own
+  password change; too loose leaves whoever knew the old password signed in for
+  another week.
+- **`changePasswordSchema` and `addUserSchema`** — a short password, an empty
+  current password, and a new password identical to the old one are all refused;
+  a valid colleague is accepted.
+
+Two things it cannot cover, because they cross the session boundary and a mock
+would only be testing itself — do them by hand once:
+
+1. A manager adds a user → sign in as them → they see that workshop's book and
+   only that one.
+2. Change the password in one browser → the other browser's session is dead on
+   its next request, and the browser that made the change is still signed in.
+
 ## `npm run cases` — the CLI runner
 
 ```bash
@@ -113,6 +141,7 @@ npm run db:generate
 npx tsc --noEmit
 npx tsx src/lib/engine-check.ts   # domain, file + database
 npm run check:visit               # model
+npm run check:auth                # sessions and the account forms
 npm run lint
 npm run build
 ```

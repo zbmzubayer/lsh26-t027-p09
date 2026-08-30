@@ -219,6 +219,12 @@ Query mutations uniformly.
 wrong password both return "Invalid email or password", so the endpoint is not a
 user-enumeration oracle.
 
-A newly registered user has **no `caseId`**, and the dashboard says so rather
-than showing another workshop's book. Assigning a workshop is currently a manual
-database operation.
+`addWorkshopUser` takes `caseId` from the session, never from the payload — the
+same rule `requireWorkshop()` enforces on the data routes, so a manager cannot
+post a colleague into another workshop. A duplicate address comes back as
+"Email already registered" and nothing more; it never names the workshop the
+address belongs to.
+
+A user who registers themselves at `/register` still has **no `caseId`**, and
+the dashboard says so rather than showing another workshop's book. Making the
+_first_ manager of a workshop is still a manual database operation.
