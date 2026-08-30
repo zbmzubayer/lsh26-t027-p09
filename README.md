@@ -51,9 +51,13 @@ Currently this information lives in a register book and the manager's head. The 
    ```
 
    Required variables:
-
    - `DATABASE_URL` — PostgreSQL connection string
    - `AUTH_SECRET` — at least 32 characters
+
+   Optional:
+   - `ML_URL` — the visit-prediction service (see below). Leave it unset and the
+     app answers from the model bundled in `src/data`, which is what a deployed
+     instance should do.
 
 2. Install dependencies:
 
@@ -86,3 +90,47 @@ Currently this information lives in a register book and the manager's head. The 
 - `npm run db:generate` — generate Prisma client
 - `npm run db:push` — push schema changes to the database
 - `npm run db:studio` — open Prisma Studio
+- `npm run cases -- <case.json> [--out answers.json]` — answers for one or more
+  case files without a browser or a database; byte-identical to `POST /api/run`
+- `npm run ml:export` — export every case in the database to `ml/cases.json`
+- `npm run ml` — retrain the visit predictor and rewrite `src/data/visit-predictions.json`
+- `npm run ml:serve` — run the prediction service on `127.0.0.1:8010`
+- `npm run check:visit` — assert the bundled model and the live service agree
+
+## Answering a case without the app
+
+`POST /api/run` takes a whole case as JSON and returns statuses, the ranked call
+list and the 8-week workload. It is stateless — no session, no database — so a
+case that is not in the workshop's book can still be scored:
+
+```bash
+curl -X POST http://localhost:3000/api/run \
+  -H 'content-type: application/json' -d @src/data/case-pub-01.json
+```
+
+`npm run cases` does the same offline, and accepts a single case object, a bare
+array of cases, or a file wrapping either under `case` / `cases`.
+
+## Predicting the next visit
+
+The rule engine says when an item is **due**. A separate model says when the
+customer will actually **come**, which is the only quantity in the data that
+genuinely varies — every cost, interval and km/day in it is a constant.
+
+A random forest trained on the 1,549 observed inter-visit gaps across all 25
+workshops predicts the gap from a vehicle's last visit. Validated
+leave-one-case-out — fitted on 24 workshops, scored on the one held out:
+
+|                                                 | MAE                      |
+| ----------------------------------------------- | ------------------------ |
+| baseline (median gap of the training workshops) | 62.5 days                |
+| model                                           | **41.5 days**            |
+| same model on shuffled labels, 12 refits        | 64.3 days — none beat it |
+
+The workshop app cannot host Python, so `ml/serve.py` runs locally behind an
+ngrok tunnel and `ML_URL` points at it. That tunnel is an optimisation, not a
+dependency: if it is unset or unreachable, `/api/visit` answers from the lookup
+table committed in `src/data/visit-predictions.json` and says so in `source`.
+The button always returns a date.
+
+See `ml/HANDOFF.md` for the endpoint contract and the UI wiring.
