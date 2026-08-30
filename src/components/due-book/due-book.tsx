@@ -14,6 +14,7 @@ import {
   vehicleStatuses,
 } from "@/lib/engine";
 import { CallList } from "./call-list";
+import { IntakeForm, type IntakePayload } from "./intake-form";
 import { Method } from "./method";
 import type { Flash } from "./vehicle-detail";
 import { VehicleDetail } from "./vehicle-detail";
@@ -58,6 +59,8 @@ export function DueBook({
   const [sort, setSort] = useState<CallSort>("score");
   const [flash, setFlash] = useState<Flash | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
+  const [intakeOpen, setIntakeOpen] = useState(false);
+  const [intakeError, setIntakeError] = useState<string | null>(null);
 
   const kase = useQuery({
     queryKey: ["case", caseId],
@@ -74,7 +77,8 @@ export function DueBook({
     mutationFn: async (
       req:
         | { kind: "service"; itemName: string; date: string; km?: number }
-        | { kind: "odometer"; km: number },
+        | { kind: "odometer"; km: number }
+        | { kind: "item"; name: string; dueDate?: string },
     ) => {
       if (!vehicleId) throw new Error("No vehicle selected");
       const before = new Map(
@@ -88,7 +92,12 @@ export function DueBook({
           : []
         ).map((s) => [s.item.name, s.dueDate]),
       );
-      const url = req.kind === "service" ? "/api/service" : "/api/odometer";
+      const url =
+        req.kind === "service"
+          ? "/api/service"
+          : req.kind === "odometer"
+            ? "/api/odometer"
+            : "/api/service-item";
       const payload =
         req.kind === "service"
           ? {
@@ -97,7 +106,13 @@ export function DueBook({
               date: req.date,
               ...(req.km != null ? { km: req.km } : {}),
             }
-          : { vehicleId, km: req.km };
+          : req.kind === "odometer"
+            ? { vehicleId, km: req.km }
+            : {
+                vehicleId,
+                name: req.name,
+                ...(req.dueDate ? { dueDate: req.dueDate } : {}),
+              };
       const next = await json<CaseData>(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -112,6 +127,15 @@ export function DueBook({
       const after = vehicleStatuses(v, next.today, opts);
       const moved = after.filter((s) => before.get(s.item.name) !== s.dueDate);
       const still = after.length - moved.length;
+      if (kind === "item") {
+        const fitted = after.find((s) => !before.has(s.item.name));
+        setFlash({
+          text: fitted
+            ? `${fitted.item.name} fitted — first due ${fitted.dueDate} (${fitted.reason}).`
+            : "Service fitted.",
+        });
+        return;
+      }
       setFlash({
         text: moved.length
           ? `${moved
@@ -128,6 +152,36 @@ export function DueBook({
       });
     },
     onError: (e: Error) => setFlash({ bad: true, text: e.message }),
+  });
+
+  /** Customer + car + services in one call; jumps straight to the new car. */
+  const intake = useMutation({
+    mutationFn: (payload: IntakePayload) =>
+      json<{ vehicleId: string; case: CaseData }>("/api/vehicle", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      }),
+    onSuccess: ({ vehicleId: id, case: next }) => {
+      qc.setQueryData(["case", caseId], next);
+      const v = next.vehicles.find((x) => x.id === id);
+      const owner = next.owners.find((o) => o.id === v?.owner_id);
+      const first = v
+        ? [...vehicleStatuses(v, next.today, opts)].sort((a, b) =>
+            a.dueDate.localeCompare(b.dueDate),
+          )[0]
+        : undefined;
+      setIntakeOpen(false);
+      setIntakeError(null);
+      setVehicleId(id);
+      setView("vehicle");
+      setFlash({
+        text: `${id} ${v?.model} added for ${owner?.name} with ${v?.service_items.length} services.${
+          first ? ` First due: ${first.item.name}, ${first.dueDate}.` : ""
+        }`,
+      });
+    },
+    onError: (e: Error) => setIntakeError(e.message),
   });
 
   const copy = async (text: string, label: string) => {
@@ -353,7 +407,31 @@ export function DueBook({
                 />
               )}
               {view === "vehicles" && (
-                <VehicleGrid a={a} onOpen={openVehicle} />
+                <>
+                  {intakeOpen ? (
+                    <IntakeForm
+                      a={a}
+                      pending={intake.isPending}
+                      error={intakeError}
+                      onSubmit={(p) => intake.mutate(p)}
+                      onCancel={() => {
+                        setIntakeOpen(false);
+                        setIntakeError(null);
+                      }}
+                    />
+                  ) : (
+                    <div style={{ marginBottom: 14 }}>
+                      <button
+                        type="button"
+                        className="btn primary"
+                        onClick={() => setIntakeOpen(true)}
+                      >
+                        + Add a car to the books
+                      </button>
+                    </div>
+                  )}
+                  <VehicleGrid a={a} onOpen={openVehicle} />
+                </>
               )}
               {view === "vehicle" && vehicleId && (
                 <VehicleDetail
@@ -372,6 +450,9 @@ export function DueBook({
                   }
                   onOdometer={(kmValue) =>
                     write.mutate({ kind: "odometer", km: kmValue })
+                  }
+                  onAddItem={(name, dueDate) =>
+                    write.mutate({ kind: "item", name, dueDate })
                   }
                 />
               )}

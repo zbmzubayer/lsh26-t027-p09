@@ -6,6 +6,7 @@ import type {
   Vehicle,
 } from "@/lib/engine";
 import prisma from "@/lib/prisma";
+import { CATALOGUE_BY_NAME } from "@/lib/service-catalogue";
 
 /**
  * Assembly of the published case shape out of Postgres. `GET /api/case` and the
@@ -195,6 +196,171 @@ export async function addOdometerReadingDb(
     },
     create: { caseId, vehicleId, date: kase.today, km },
     update: { km },
+  });
+  return loadCase(caseId);
+}
+
+/* ---------------------------------------------------------------------------
+ * Intake: putting a walk-in customer and their car onto the books.
+ * ------------------------------------------------------------------------ */
+
+type Tx = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
+
+/**
+ * Next free "V43" / "O28" for this workshop. Parses the number rather than
+ * taking max() of the string, so the 100th vehicle sorts after the 99th.
+ */
+async function nextId(
+  tx: Tx,
+  caseId: string,
+  kind: "vehicle" | "owner",
+): Promise<string> {
+  const rows =
+    kind === "vehicle"
+      ? await tx.vehicle.findMany({ where: { caseId }, select: { id: true } })
+      : await tx.owner.findMany({ where: { caseId }, select: { id: true } });
+  const max = rows.reduce(
+    (m, r) => Math.max(m, Number.parseInt(r.id.slice(1), 10) || 0),
+    0,
+  );
+  return `${kind === "vehicle" ? "V" : "O"}${String(max + 1).padStart(2, "0")}`;
+}
+
+export interface IntakeItem {
+  name: string;
+  /** required for fixed_date items, rejected for the other two */
+  dueDate?: string;
+  /** overrides the catalogue price */
+  cost?: number;
+}
+
+export interface IntakeInput {
+  customer: { existingId: string } | { name: string; phone: string };
+  model: string;
+  plate: string;
+  /** what the odometer reads right now; stored as a reading dated case.today */
+  km: number;
+  items: IntakeItem[];
+}
+
+/** Turns a catalogue pick into the columns a ServiceItem row needs. */
+function itemColumns(pick: IntakeItem) {
+  const entry = CATALOGUE_BY_NAME.get(pick.name);
+  if (!entry) throw new BadWrite(`"${pick.name}" is not a service we fit`);
+  if (entry.rule === "fixed_date" && !pick.dueDate)
+    throw new BadWrite(`${pick.name} needs the expiry date from the paper`);
+  if (entry.rule !== "fixed_date" && pick.dueDate)
+    throw new BadWrite(
+      `${pick.name} is ${entry.rule.replace("_", "-")}; its due date is worked out, not entered`,
+    );
+  const cost = pick.cost ?? entry.cost;
+  if (!Number.isFinite(cost) || cost < 0)
+    throw new BadWrite(`${pick.name} needs a valid cost`);
+  return {
+    name: entry.name,
+    rule: entry.rule,
+    costBdt: cost.toFixed(2),
+    dueDate: entry.rule === "fixed_date" ? (pick.dueDate as string) : null,
+    everyMonths: entry.everyMonths ?? null,
+    everyKm: entry.everyKm ?? null,
+  };
+}
+
+/**
+ * Customer, car, its first odometer reading and its service items, in one
+ * transaction. All or nothing: a vehicle without a reading has no current
+ * odometer and would break `currentKm()`, and one with no items fails the
+ * case's own Zod contract.
+ */
+export async function intakeVehicle(
+  caseId: string,
+  input: IntakeInput,
+): Promise<{ vehicleId: string; data: CaseData }> {
+  const kase = await prisma.case.findUnique({ where: { id: caseId } });
+  if (!kase) throw new CaseNotFound(caseId);
+
+  const model = input.model.trim();
+  const plate = input.plate.trim();
+  if (!model) throw new BadWrite("The car needs a model");
+  if (!plate) throw new BadWrite("The car needs a plate");
+  if (!Number.isInteger(input.km) || input.km < 0)
+    throw new BadWrite("The odometer reading must be a whole number of km");
+  if (!input.items.length)
+    throw new BadWrite("Tick at least one service the car is due for");
+  if (new Set(input.items.map((i) => i.name)).size !== input.items.length)
+    throw new BadWrite("The same service is listed twice");
+
+  const columns = input.items.map(itemColumns);
+
+  const clash = await prisma.vehicle.findUnique({
+    where: { caseId_plate: { caseId, plate } },
+    select: { id: true },
+  });
+  if (clash)
+    throw new BadWrite(`${plate} is already on the books as ${clash.id}`);
+
+  const vehicleId = await prisma.$transaction(async (tx) => {
+    let ownerId: string;
+    if ("existingId" in input.customer) {
+      const owner = await tx.owner.findUnique({
+        where: { caseId_id: { caseId, id: input.customer.existingId } },
+        select: { id: true },
+      });
+      if (!owner)
+        throw new BadWrite(`No customer ${input.customer.existingId}`);
+      ownerId = owner.id;
+    } else {
+      const name = input.customer.name.trim();
+      const phone = input.customer.phone.trim();
+      if (!name) throw new BadWrite("The customer needs a name");
+      if (!/^\d{11}$/.test(phone))
+        throw new BadWrite("Phone should be 11 digits, like 01711223344");
+      ownerId = await nextId(tx, caseId, "owner");
+      await tx.owner.create({ data: { caseId, id: ownerId, name, phone } });
+    }
+
+    const id = await nextId(tx, caseId, "vehicle");
+    await tx.vehicle.create({
+      data: { caseId, id, ownerId, model, plate },
+    });
+    // dated the case's own today, never the clock
+    await tx.odometerReading.create({
+      data: { caseId, vehicleId: id, date: kase.today, km: input.km },
+    });
+    await tx.serviceItem.createMany({
+      data: columns.map((c) => ({ caseId, vehicleId: id, ...c })),
+    });
+    return id;
+  });
+
+  // the id is returned beside the case, never folded into it: CaseData stays
+  // byte-identical to the published shape
+  return { vehicleId, data: await loadCase(caseId) };
+}
+
+/** One more service onto a car already on the books. */
+export async function addServiceItem(
+  caseId: string,
+  vehicleId: string,
+  pick: IntakeItem,
+): Promise<CaseData> {
+  const vehicle = await prisma.vehicle.findUnique({
+    where: { caseId_id: { caseId, id: vehicleId } },
+    select: { id: true },
+  });
+  if (!vehicle) throw new BadWrite(`No vehicle ${vehicleId} in ${caseId}`);
+
+  const columns = itemColumns(pick);
+  const exists = await prisma.serviceItem.findUnique({
+    where: {
+      caseId_vehicleId_name: { caseId, vehicleId, name: columns.name },
+    },
+    select: { id: true },
+  });
+  if (exists) throw new BadWrite(`${columns.name} is already on this vehicle`);
+
+  await prisma.serviceItem.create({
+    data: { caseId, vehicleId, ...columns },
   });
   return loadCase(caseId);
 }

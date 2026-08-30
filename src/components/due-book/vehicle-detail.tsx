@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Analysis } from "@/lib/due-book-view";
+import { SERVICE_CATALOGUE } from "@/lib/service-catalogue";
 import { km, Plate, ruleLabel, tkS } from "./format";
 import { ItemTable } from "./item-table";
 import { Sparkline } from "./vehicles";
@@ -19,6 +20,7 @@ export function VehicleDetail({
   onBack,
   onRecord,
   onOdometer,
+  onAddItem,
 }: {
   a: Analysis;
   vehicleId: string;
@@ -27,6 +29,7 @@ export function VehicleDetail({
   onBack: () => void;
   onRecord: (itemName: string, date: string, kmValue?: number) => void;
   onOdometer: (kmValue: number) => void;
+  onAddItem: (name: string, dueDate?: string) => void;
 }) {
   const v = a.vehicles.find((x) => x.vehicle.id === vehicleId);
   const [itemName, setItemName] = useState(
@@ -37,6 +40,8 @@ export function VehicleDetail({
   const [odoKm, setOdoKm] = useState(
     String(Math.round((v?.currentKm ?? 0) + (v?.rate ?? 0) * 7)),
   );
+  const [newItem, setNewItem] = useState("");
+  const [newItemDate, setNewItemDate] = useState("");
 
   if (!v) return null;
   const item = v.vehicle.service_items.find((i) => i.name === itemName);
@@ -44,6 +49,10 @@ export function VehicleDetail({
   const distItems = v.vehicle.service_items.filter(
     (i) => i.rule === "distance_km",
   );
+  const fitted = new Set(v.vehicle.service_items.map((i) => i.name));
+  const fittable = SERVICE_CATALOGUE.filter((e) => !fitted.has(e.name));
+  const newItemNeedsDate =
+    SERVICE_CATALOGUE.find((e) => e.name === newItem)?.rule === "fixed_date";
 
   const basisNote = v.rateSpan
     ? `${km(v.rateSpan.km)} km over ${v.rateSpan.days} days`
@@ -210,6 +219,83 @@ export function VehicleDetail({
               ). Fixed dates and time-based intervals do not move.
             </p>
           </div>
+        </div>
+      </div>
+
+      <div className="panel">
+        <div className="panel-hd">
+          <h2>Fit another service to this car</h2>
+          <span className="note">
+            {fittable.length} of {SERVICE_CATALOGUE.length} not yet on it
+          </span>
+        </div>
+        <div className="panel-bd">
+          {fittable.length === 0 ? (
+            <p style={{ color: "var(--ink-3)", fontSize: 13 }}>
+              Every service we fit is already on this car.
+            </p>
+          ) : (
+            <form
+              className="form"
+              style={{
+                flexDirection: "row",
+                alignItems: "flex-end",
+                gap: 10,
+                flexWrap: "wrap",
+              }}
+              onSubmit={(e) => {
+                e.preventDefault();
+                onAddItem(newItem, newItemNeedsDate ? newItemDate : undefined);
+                setNewItem("");
+                setNewItemDate("");
+              }}
+            >
+              <div className="field" style={{ flex: "1 1 240px" }}>
+                <label htmlFor="newitem">Service</label>
+                <select
+                  id="newitem"
+                  value={newItem}
+                  onChange={(e) => setNewItem(e.target.value)}
+                >
+                  <option value="">Choose a service…</option>
+                  {fittable.map((e) => (
+                    <option key={e.name} value={e.name}>
+                      {e.name} —{" "}
+                      {ruleLabel({
+                        name: e.name,
+                        rule: e.rule,
+                        every_months: e.everyMonths,
+                        every_km: e.everyKm,
+                        cost_bdt: String(e.cost),
+                      })}{" "}
+                      — {tkS(e.cost)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {newItemNeedsDate && (
+                <div className="field" style={{ flex: "0 1 190px" }}>
+                  <label htmlFor="newitemdate">Expiry on the paper</label>
+                  <input
+                    id="newitemdate"
+                    type="date"
+                    value={newItemDate}
+                    required
+                    onChange={(e) => setNewItemDate(e.target.value)}
+                  />
+                </div>
+              )}
+              <button
+                className="btn primary"
+                type="submit"
+                disabled={
+                  !newItem || (newItemNeedsDate && !newItemDate) || pending
+                }
+              >
+                {pending ? "Saving…" : "Fit service"}
+              </button>
+            </form>
+          )}
         </div>
       </div>
 
