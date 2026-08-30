@@ -536,7 +536,9 @@ export function DueBook({
                   }
                 />
               )}
-              {view === "workload" && <Workload a={a} />}
+              {view === "workload" && (
+                <Workload a={a} data={data} opts={opts} />
+              )}
               {view === "reminders" && (
                 <Reminders
                   a={a}

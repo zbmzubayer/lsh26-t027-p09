@@ -121,16 +121,32 @@ export function VehicleSummaryActions({
   v,
   reminderText,
   onOpenVehicle,
+  onCheckVisit,
+  hasPrediction,
+  predicting,
 }: {
   v: VehicleView;
   reminderText: (ownerId: string) => string;
   onOpenVehicle: (vehicleId: string) => void;
+  onCheckVisit?: () => void;
+  hasPrediction?: boolean;
+  predicting?: boolean;
 }) {
   return (
     <>
+      {onCheckVisit && !hasPrediction && (
+        <button
+          type="button"
+          className="btn sm primary"
+          onClick={onCheckVisit}
+          disabled={predicting}
+        >
+          {predicting ? "Checking…" : "When will they be back?"}
+        </button>
+      )}
       <button
         type="button"
-        className="btn sm primary"
+        className="btn sm"
         onClick={() => onOpenVehicle(v.vehicle.id)}
       >
         Open full vehicle page

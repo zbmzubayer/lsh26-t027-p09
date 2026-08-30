@@ -1088,3 +1088,26 @@
   display: block;
   margin-bottom: 3px;
 }
+
+/* ── workload: due vs expected ──────────────────────────────────────────────
+   The pale bar is work due; the solid one nested inside it is what the return
+   model expects to actually arrive. Nesting rather than pairing keeps the
+   comparison in one column, so the gap between them is the thing you read. */
+.duebook .chart .bar .fill.due {
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-line);
+}
+.duebook .chart .bar .fill.exp {
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  bottom: 0;
+  background: var(--accent);
+  border-radius: 3px 3px 0 0;
+  min-height: 0;
+}
+.duebook .xaxis div span {
+  display: block;
+  font-family: var(--mono);
+  font-size: 10px;
+}

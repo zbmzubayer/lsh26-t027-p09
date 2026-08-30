@@ -18,7 +18,9 @@ interface VisitResponse {
   predictions: VisitPrediction[];
 }
 
-async function askVisit(body: { ownerId: string }): Promise<VisitResponse> {
+async function askVisit(
+  body: { ownerId: string } | { vehicleId: string },
+): Promise<VisitResponse> {
   const res = await fetch("/api/visit", {
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -51,18 +53,30 @@ export function Search({
   const [visits, setVisits] = useState<
     Record<string, { source: string; note?: string; rows: VisitPrediction[] }>
   >({});
+  const [byVehicle, setByVehicle] = useState<Record<string, VisitPrediction>>(
+    {},
+  );
 
   const visit = useMutation({
     mutationFn: askVisit,
-    onSuccess: (data, vars) =>
-      setVisits((prev) => ({
-        ...prev,
-        [vars.ownerId]: {
-          source: data.source,
-          note: data.note,
-          rows: data.predictions,
-        },
-      })),
+    onSuccess: (data, vars) => {
+      if ("ownerId" in vars)
+        setVisits((prev) => ({
+          ...prev,
+          [vars.ownerId]: {
+            source: data.source,
+            note: data.note,
+            rows: data.predictions,
+          },
+        }));
+      // either shape lands in the by-vehicle store, so the drawer can read one
+      // regardless of which button fetched it
+      setByVehicle((prev) => {
+        const next = { ...prev };
+        for (const p of data.predictions) next[p.vehicleId] = p;
+        return next;
+      });
+    },
   });
 
   const term = q.trim().toLowerCase();
@@ -98,9 +112,7 @@ export function Search({
   const openVehicleView =
     a.vehicles.find((v) => v.vehicle.id === openId) ?? null;
   const openPrediction = openVehicleView
-    ? (Object.values(visits)
-        .flatMap((x) => x.rows)
-        .find((r) => r.vehicleId === openVehicleView.vehicle.id) ?? null)
+    ? (byVehicle[openVehicleView.vehicle.id] ?? null)
     : null;
 
   return (
@@ -140,7 +152,10 @@ export function Search({
           const due = vehicles.reduce((s, v) => s + v.dueValue, 0);
           const overdue = vehicles.reduce((s, v) => s + v.counts.overdue, 0);
           const soon = vehicles.reduce((s, v) => s + v.counts.due_soon, 0);
-          const pending = visit.isPending && visit.variables?.ownerId === id;
+          const pending =
+            visit.isPending &&
+            (visit.variables as { ownerId?: string } | undefined)?.ownerId ===
+              id;
 
           return (
             <div className="remcard" key={id} style={{ marginBottom: 12 }}>
@@ -324,6 +339,15 @@ export function Search({
               <VehicleSummaryActions
                 v={openVehicleView}
                 reminderText={reminderText}
+                hasPrediction={openPrediction != null}
+                predicting={
+                  visit.isPending &&
+                  (visit.variables as { vehicleId?: string })?.vehicleId ===
+                    openVehicleView.vehicle.id
+                }
+                onCheckVisit={() =>
+                  visit.mutate({ vehicleId: openVehicleView.vehicle.id })
+                }
                 onOpenVehicle={(id) => {
                   setOpenId(null);
                   onOpenVehicle(id);
