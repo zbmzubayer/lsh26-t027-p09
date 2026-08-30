@@ -7,11 +7,152 @@ datasource db {
   provider = "postgresql"
 }
 
+/// Workshop staff login. A user is not an Owner — owners are the customers.
+/// `caseId` is the one book this user works out of: it is read from the session
+/// on every request, never from the client, so a signed-in user can only ever
+/// see and write their own workshop's data.
+// ponytail: nullable because the seed predates it and /api/run needs no user.
+// An account with no workshop gets told so rather than being defaulted into
+// someone else's book.
 model User {
   id           String   @id @default(uuid(7)) @db.Uuid
   name         String
   email        String   @unique
   passwordHash String
-  createdAt    DateTime @default(now()) @db.Timestamptz
-  updatedAt    DateTime @updatedAt @db.Timestamptz
+  caseId       String?
+  createdAt    DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt    DateTime @updatedAt @db.Timestamptz(6)
+
+  case Case? @relation(fields: [caseId], references: [id], onDelete: SetNull)
+}
+
+/// Every date is a plain ISO string ("2026-08-30"), never DateTime: `today` is a
+/// case field, no date math ever happens in SQL, and ISO strings sort
+/// chronologically as-is. DateTime would only add a timezone bug.
+/// Money is Decimal(10,2); the API serialises it back with .toFixed(2) so the
+/// assembled CaseData is byte-identical to case-pub-01.json and the engine,
+/// the UI and engine-check stay untouched.
+
+/// One row per published case (PUB-01 … PUB-25), carrying that case's `today`.
+/// Case ids are only unique *within* a case — PUB-01 and PUB-02 both have a V01 —
+/// so caseId is part of the primary key of Owner and Vehicle, and part of every
+/// unique constraint and foreign key below. Always scope a query by caseId.
+/// /api/run stays stateless and never touches these tables.
+model Case {
+  id     String  @id // "PUB-01"
+  today  String // "2026-08-30"
+  owners Owner[]
+  users  User[]
+}
+
+model Owner {
+  id     String // "O01", unique within the case only
+  caseId String
+  name   String
+  phone  String
+
+  case     Case      @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  vehicles Vehicle[]
+
+  @@id([caseId, id])
+}
+
+model Vehicle {
+  id      String // "V01", unique within the case only
+  caseId  String
+  ownerId String
+  model   String
+  plate   String
+
+  owner            Owner              @relation(fields: [caseId, ownerId], references: [caseId, id], onDelete: Cascade)
+  odometerReadings OdometerReading[]
+  serviceItems     ServiceItem[]
+  serviceRecords   ServiceRecord[]
+  prediction       VehiclePrediction?
+
+  @@id([caseId, id])
+  @@unique([caseId, plate])
+  @@index([caseId, ownerId])
+}
+
+model OdometerReading {
+  id        String @id @default(uuid(7)) @db.Uuid
+  caseId    String
+  vehicleId String
+  date      String
+  km        Int
+
+  vehicle Vehicle @relation(fields: [caseId, vehicleId], references: [caseId, id], onDelete: Cascade)
+
+  /// addOdometerReading replaces the row dated `today` rather than appending a second one.
+  @@unique([caseId, vehicleId, date])
+}
+
+enum Rule {
+  fixed_date
+  period_months
+  distance_km
+}
+
+model ServiceItem {
+  id        String  @id @default(uuid(7)) @db.Uuid
+  caseId    String
+  vehicleId String
+  name      String
+  rule      Rule
+  costBdt   Decimal @db.Decimal(10, 2)
+
+  /// Exactly one of these is set, per `rule`. Enforced by the Zod contract at
+  /// the API boundary (src/lib/case-schema.ts), not by a CHECK constraint —
+  /// the seed and the two write routes are the only writers.
+  dueDate     String?
+  everyMonths Int?
+  everyKm     Int?
+
+  vehicle Vehicle         @relation(fields: [caseId, vehicleId], references: [caseId, id], onDelete: Cascade)
+  records ServiceRecord[]
+
+  /// recordService() finds the item by name, so names must be unique per vehicle.
+  @@unique([caseId, vehicleId, name])
+}
+
+model ServiceRecord {
+  id            String  @id @default(uuid(7)) @db.Uuid
+  caseId        String
+  vehicleId     String
+  serviceItemId String  @db.Uuid
+  date          String
+  km            Int? // distance items carry km, period items null
+  costBdt       Decimal @db.Decimal(10, 2)
+
+  vehicle Vehicle     @relation(fields: [caseId, vehicleId], references: [caseId, id], onDelete: Cascade)
+  item    ServiceItem @relation(fields: [serviceItemId], references: [id], onDelete: Cascade)
+
+  @@index([caseId, vehicleId, date])
+}
+
+/// Written only by the local trainer (Phase 6). Missing or stale rows are
+/// simply ignored — the rule engine is the fallback, so production never
+/// depends on the training PC being on.
+model VehiclePrediction {
+  caseId       String
+  vehicleId    String
+  kmPerDayPred Float
+  latenessRisk Float
+  trainedAt    DateTime @updatedAt
+
+  vehicle Vehicle @relation(fields: [caseId, vehicleId], references: [caseId, id], onDelete: Cascade)
+
+  @@id([caseId, vehicleId])
+}
+
+/// The "Retrain" button inserts a row; the local poller claims it, refits, marks it done.
+// ponytail: no caseId — one trainer, whole DB per run. Add one if runs ever need scoping.
+model RetrainRequest {
+  id          String    @id @default(uuid(7)) @db.Uuid
+  status      String    @default("pending") // pending | running | done | failed
+  requestedAt DateTime  @default(now())
+  finishedAt  DateTime?
+
+  @@index([status, requestedAt])
 }

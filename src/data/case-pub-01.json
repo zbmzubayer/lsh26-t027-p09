@@ -1,0 +1,2257 @@
+{
+  "case_id": "PUB-01",
+  "today": "2026-08-30",
+  "owners": [
+    { "id": "O01", "name": "Salma Ahmed", "phone": "01481704039" },
+    { "id": "O02", "name": "Lubna Begum", "phone": "01632456307" },
+    { "id": "O03", "name": "Habib Ali", "phone": "01458378733" },
+    { "id": "O04", "name": "Karim Khan", "phone": "01374998700" },
+    { "id": "O05", "name": "Jahid Ahmed", "phone": "01902287168" },
+    { "id": "O06", "name": "Rina Chowdhury", "phone": "01601354553" },
+    { "id": "O07", "name": "Munni Khan", "phone": "01588343873" },
+    { "id": "O08", "name": "Shirin Akter", "phone": "01753328067" },
+    { "id": "O09", "name": "Tanvir Chowdhury", "phone": "01906649881" },
+    { "id": "O10", "name": "Karim Rahman", "phone": "01634133481" },
+    { "id": "O11", "name": "Tanvir Chowdhury", "phone": "01487272367" },
+    { "id": "O12", "name": "Kamal Hossain", "phone": "01618257749" },
+    { "id": "O13", "name": "Jahid Khan", "phone": "01810173486" },
+    { "id": "O14", "name": "Rina Ali", "phone": "01824649037" },
+    { "id": "O15", "name": "Mahbub Begum", "phone": "01962501357" },
+    { "id": "O16", "name": "Mahbub Khan", "phone": "01402580079" },
+    { "id": "O17", "name": "Rubel Rahman", "phone": "01695710675" },
+    { "id": "O18", "name": "Rahim Hossain", "phone": "01770107643" },
+    { "id": "O19", "name": "Mahbub Uddin", "phone": "01466238017" },
+    { "id": "O20", "name": "Shirin Ali", "phone": "01688157502" },
+    { "id": "O21", "name": "Rafiq Begum", "phone": "01532189654" },
+    { "id": "O22", "name": "Nasrin Rahman", "phone": "01544914344" },
+    { "id": "O23", "name": "Nasrin Akter", "phone": "01841374443" },
+    { "id": "O24", "name": "Jahid Akter", "phone": "01667063226" },
+    { "id": "O25", "name": "Kamal Ali", "phone": "01317789422" },
+    { "id": "O26", "name": "Nadia Ali", "phone": "01415051253" },
+    { "id": "O27", "name": "Tanvir Ahmed", "phone": "01732816970" }
+  ],
+  "vehicles": [
+    {
+      "id": "V01",
+      "owner_id": "O01",
+      "model": "Toyota Axio",
+      "plate": "Dhaka Metro Cha 76-9961",
+      "odometer_readings": [
+        { "date": "2026-05-10", "km": 93612 },
+        { "date": "2026-07-06", "km": 97774 },
+        { "date": "2026-08-02", "km": 99716 },
+        { "date": "2026-08-30", "km": 101743 }
+      ],
+      "service_items": [
+        {
+          "name": "Fitness certificate",
+          "rule": "fixed_date",
+          "due_date": "2027-01-31",
+          "cost_bdt": "2500.00"
+        },
+        {
+          "name": "Battery warranty",
+          "rule": "fixed_date",
+          "due_date": "2026-08-25",
+          "cost_bdt": "9000.00"
+        },
+        {
+          "name": "AC service",
+          "rule": "period_months",
+          "every_months": 12,
+          "cost_bdt": "4500.00"
+        },
+        {
+          "name": "Air filter",
+          "rule": "period_months",
+          "every_months": 6,
+          "cost_bdt": "1200.00"
+        },
+        {
+          "name": "Tyres",
+          "rule": "distance_km",
+          "every_km": 40000,
+          "cost_bdt": "32000.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Tyres",
+          "date": "2026-03-15",
+          "km": 62853,
+          "cost_bdt": "32000.00"
+        },
+        {
+          "item": "Air filter",
+          "date": "2026-04-12",
+          "km": null,
+          "cost_bdt": "1200.00"
+        },
+        {
+          "item": "AC service",
+          "date": "2026-07-04",
+          "km": null,
+          "cost_bdt": "4500.00"
+        }
+      ]
+    },
+    {
+      "id": "V02",
+      "owner_id": "O02",
+      "model": "Mitsubishi Pajero",
+      "plate": "Dhaka Metro Ga 13-4185",
+      "odometer_readings": [
+        { "date": "2026-06-14", "km": 45771 },
+        { "date": "2026-07-14", "km": 47062 },
+        { "date": "2026-08-30", "km": 49157 }
+      ],
+      "service_items": [
+        {
+          "name": "Tax token",
+          "rule": "fixed_date",
+          "due_date": "2026-07-21",
+          "cost_bdt": "6500.00"
+        },
+        {
+          "name": "Insurance",
+          "rule": "fixed_date",
+          "due_date": "2027-02-23",
+          "cost_bdt": "12000.00"
+        },
+        {
+          "name": "Engine oil",
+          "rule": "period_months",
+          "every_months": 3,
+          "cost_bdt": "3500.00"
+        },
+        {
+          "name": "Timing belt",
+          "rule": "distance_km",
+          "every_km": 80000,
+          "cost_bdt": "15000.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Engine oil",
+          "date": "2025-12-30",
+          "km": null,
+          "cost_bdt": "3500.00"
+        },
+        {
+          "item": "Timing belt",
+          "date": "2026-04-30",
+          "km": 0,
+          "cost_bdt": "15000.00"
+        }
+      ]
+    },
+    {
+      "id": "V03",
+      "owner_id": "O03",
+      "model": "Toyota Premio",
+      "plate": "Dhaka Metro Ga 83-2723",
+      "odometer_readings": [
+        { "date": "2026-05-06", "km": 106436 },
+        { "date": "2026-06-26", "km": 110176 },
+        { "date": "2026-07-18", "km": 111833 },
+        { "date": "2026-08-30", "km": 115030 }
+      ],
+      "service_items": [
+        {
+          "name": "Insurance",
+          "rule": "fixed_date",
+          "due_date": "2026-09-08",
+          "cost_bdt": "12000.00"
+        },
+        {
+          "name": "Engine oil",
+          "rule": "period_months",
+          "every_months": 3,
+          "cost_bdt": "3500.00"
+        },
+        {
+          "name": "Air filter",
+          "rule": "period_months",
+          "every_months": 6,
+          "cost_bdt": "1200.00"
+        },
+        {
+          "name": "Spark plugs",
+          "rule": "distance_km",
+          "every_km": 20000,
+          "cost_bdt": "2400.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Engine oil",
+          "date": "2025-11-16",
+          "km": null,
+          "cost_bdt": "3500.00"
+        },
+        {
+          "item": "Air filter",
+          "date": "2026-03-01",
+          "km": null,
+          "cost_bdt": "1200.00"
+        },
+        {
+          "item": "Spark plugs",
+          "date": "2026-05-25",
+          "km": 95717,
+          "cost_bdt": "2400.00"
+        }
+      ]
+    },
+    {
+      "id": "V04",
+      "owner_id": "O04",
+      "model": "Toyota Hiace",
+      "plate": "Dhaka Metro Cha 62-3764",
+      "odometer_readings": [
+        { "date": "2026-06-05", "km": 72611 },
+        { "date": "2026-07-25", "km": 73906 },
+        { "date": "2026-08-30", "km": 74813 }
+      ],
+      "service_items": [
+        {
+          "name": "Tax token",
+          "rule": "fixed_date",
+          "due_date": "2026-10-13",
+          "cost_bdt": "6500.00"
+        },
+        {
+          "name": "Fitness certificate",
+          "rule": "fixed_date",
+          "due_date": "2026-12-24",
+          "cost_bdt": "2500.00"
+        },
+        {
+          "name": "Air filter",
+          "rule": "period_months",
+          "every_months": 6,
+          "cost_bdt": "1200.00"
+        },
+        {
+          "name": "Coolant",
+          "rule": "period_months",
+          "every_months": 12,
+          "cost_bdt": "1800.00"
+        },
+        {
+          "name": "Spark plugs",
+          "rule": "distance_km",
+          "every_km": 20000,
+          "cost_bdt": "2400.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Air filter",
+          "date": "2025-07-29",
+          "km": null,
+          "cost_bdt": "1200.00"
+        },
+        {
+          "item": "Coolant",
+          "date": "2025-11-14",
+          "km": null,
+          "cost_bdt": "1800.00"
+        },
+        {
+          "item": "Spark plugs",
+          "date": "2026-03-11",
+          "km": 55404,
+          "cost_bdt": "2400.00"
+        }
+      ]
+    },
+    {
+      "id": "V05",
+      "owner_id": "O05",
+      "model": "Toyota Noah",
+      "plate": "Dhaka Metro Cha 75-6734",
+      "odometer_readings": [
+        { "date": "2026-05-29", "km": 132057 },
+        { "date": "2026-06-29", "km": 134467 },
+        { "date": "2026-07-20", "km": 136099 },
+        { "date": "2026-08-30", "km": 139257 }
+      ],
+      "service_items": [
+        {
+          "name": "Fitness certificate",
+          "rule": "fixed_date",
+          "due_date": "2026-09-01",
+          "cost_bdt": "2500.00"
+        },
+        {
+          "name": "Battery warranty",
+          "rule": "fixed_date",
+          "due_date": "2026-12-05",
+          "cost_bdt": "9000.00"
+        },
+        {
+          "name": "AC service",
+          "rule": "period_months",
+          "every_months": 12,
+          "cost_bdt": "4500.00"
+        },
+        {
+          "name": "Spark plugs",
+          "rule": "distance_km",
+          "every_km": 20000,
+          "cost_bdt": "2400.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Spark plugs",
+          "date": "2026-03-12",
+          "km": 119474,
+          "cost_bdt": "2400.00"
+        },
+        {
+          "item": "AC service",
+          "date": "2026-07-24",
+          "km": null,
+          "cost_bdt": "4500.00"
+        }
+      ]
+    },
+    {
+      "id": "V06",
+      "owner_id": "O06",
+      "model": "Nissan X-Trail",
+      "plate": "Dhaka Metro Ga 26-6348",
+      "odometer_readings": [
+        { "date": "2026-05-03", "km": 56854 },
+        { "date": "2026-06-08", "km": 58203 },
+        { "date": "2026-07-17", "km": 59660 },
+        { "date": "2026-08-30", "km": 61280 }
+      ],
+      "service_items": [
+        {
+          "name": "Insurance",
+          "rule": "fixed_date",
+          "due_date": "2027-01-05",
+          "cost_bdt": "12000.00"
+        },
+        {
+          "name": "Tax token",
+          "rule": "fixed_date",
+          "due_date": "2026-11-07",
+          "cost_bdt": "6500.00"
+        },
+        {
+          "name": "Coolant",
+          "rule": "period_months",
+          "every_months": 12,
+          "cost_bdt": "1800.00"
+        },
+        {
+          "name": "Engine oil",
+          "rule": "period_months",
+          "every_months": 3,
+          "cost_bdt": "3500.00"
+        },
+        {
+          "name": "Timing belt",
+          "rule": "distance_km",
+          "every_km": 80000,
+          "cost_bdt": "15000.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Coolant",
+          "date": "2025-11-18",
+          "km": null,
+          "cost_bdt": "1800.00"
+        },
+        {
+          "item": "Engine oil",
+          "date": "2025-11-18",
+          "km": null,
+          "cost_bdt": "3500.00"
+        },
+        {
+          "item": "Timing belt",
+          "date": "2026-06-12",
+          "km": 0,
+          "cost_bdt": "15000.00"
+        }
+      ]
+    },
+    {
+      "id": "V07",
+      "owner_id": "O07",
+      "model": "Nissan X-Trail",
+      "plate": "Dhaka Metro Ga 87-1873",
+      "odometer_readings": [
+        { "date": "2026-05-17", "km": 142552 },
+        { "date": "2026-06-28", "km": 143858 },
+        { "date": "2026-08-01", "km": 144974 },
+        { "date": "2026-08-30", "km": 145868 }
+      ],
+      "service_items": [
+        {
+          "name": "Insurance",
+          "rule": "fixed_date",
+          "due_date": "2026-08-11",
+          "cost_bdt": "12000.00"
+        },
+        {
+          "name": "AC service",
+          "rule": "period_months",
+          "every_months": 12,
+          "cost_bdt": "4500.00"
+        },
+        {
+          "name": "Engine oil",
+          "rule": "period_months",
+          "every_months": 3,
+          "cost_bdt": "3500.00"
+        },
+        {
+          "name": "Timing belt",
+          "rule": "distance_km",
+          "every_km": 80000,
+          "cost_bdt": "15000.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "AC service",
+          "date": "2025-11-04",
+          "km": null,
+          "cost_bdt": "4500.00"
+        },
+        {
+          "item": "Timing belt",
+          "date": "2026-03-04",
+          "km": 65423,
+          "cost_bdt": "15000.00"
+        },
+        {
+          "item": "Engine oil",
+          "date": "2026-03-13",
+          "km": null,
+          "cost_bdt": "3500.00"
+        }
+      ]
+    },
+    {
+      "id": "V08",
+      "owner_id": "O08",
+      "model": "Toyota Axio",
+      "plate": "Dhaka Metro Ba 80-7180",
+      "odometer_readings": [
+        { "date": "2026-05-20", "km": 92957 },
+        { "date": "2026-07-15", "km": 95338 },
+        { "date": "2026-08-30", "km": 97239 }
+      ],
+      "service_items": [
+        {
+          "name": "Insurance",
+          "rule": "fixed_date",
+          "due_date": "2026-09-26",
+          "cost_bdt": "12000.00"
+        },
+        {
+          "name": "Tax token",
+          "rule": "fixed_date",
+          "due_date": "2027-02-23",
+          "cost_bdt": "6500.00"
+        },
+        {
+          "name": "Engine oil",
+          "rule": "period_months",
+          "every_months": 3,
+          "cost_bdt": "3500.00"
+        },
+        {
+          "name": "Brake pads",
+          "rule": "distance_km",
+          "every_km": 10000,
+          "cost_bdt": "6000.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Engine oil",
+          "date": "2026-02-07",
+          "km": null,
+          "cost_bdt": "3500.00"
+        },
+        {
+          "item": "Brake pads",
+          "date": "2026-07-16",
+          "km": 88224,
+          "cost_bdt": "6000.00"
+        }
+      ]
+    },
+    {
+      "id": "V09",
+      "owner_id": "O09",
+      "model": "Toyota Hiace",
+      "plate": "Dhaka Metro Kha 24-3068",
+      "odometer_readings": [
+        { "date": "2026-06-10", "km": 64651 },
+        { "date": "2026-07-28", "km": 67794 },
+        { "date": "2026-08-30", "km": 69944 }
+      ],
+      "service_items": [
+        {
+          "name": "Fitness certificate",
+          "rule": "fixed_date",
+          "due_date": "2026-12-11",
+          "cost_bdt": "2500.00"
+        },
+        {
+          "name": "Tax token",
+          "rule": "fixed_date",
+          "due_date": "2027-02-07",
+          "cost_bdt": "6500.00"
+        },
+        {
+          "name": "Coolant",
+          "rule": "period_months",
+          "every_months": 12,
+          "cost_bdt": "1800.00"
+        },
+        {
+          "name": "Spark plugs",
+          "rule": "distance_km",
+          "every_km": 20000,
+          "cost_bdt": "2400.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Spark plugs",
+          "date": "2026-04-11",
+          "km": 50382,
+          "cost_bdt": "2400.00"
+        },
+        {
+          "item": "Coolant",
+          "date": "2026-05-28",
+          "km": null,
+          "cost_bdt": "1800.00"
+        }
+      ]
+    },
+    {
+      "id": "V10",
+      "owner_id": "O10",
+      "model": "Toyota Allion",
+      "plate": "Dhaka Metro Cha 46-8210",
+      "odometer_readings": [
+        { "date": "2026-08-04", "km": 132978 },
+        { "date": "2026-08-30", "km": 133821 }
+      ],
+      "service_items": [
+        {
+          "name": "Fitness certificate",
+          "rule": "fixed_date",
+          "due_date": "2026-11-02",
+          "cost_bdt": "2500.00"
+        },
+        {
+          "name": "Battery warranty",
+          "rule": "fixed_date",
+          "due_date": "2027-01-02",
+          "cost_bdt": "9000.00"
+        },
+        {
+          "name": "AC service",
+          "rule": "period_months",
+          "every_months": 12,
+          "cost_bdt": "4500.00"
+        },
+        {
+          "name": "Engine oil",
+          "rule": "period_months",
+          "every_months": 3,
+          "cost_bdt": "3500.00"
+        },
+        {
+          "name": "Spark plugs",
+          "rule": "distance_km",
+          "every_km": 20000,
+          "cost_bdt": "2400.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "AC service",
+          "date": "2026-02-04",
+          "km": null,
+          "cost_bdt": "4500.00"
+        },
+        {
+          "item": "Spark plugs",
+          "date": "2026-04-21",
+          "km": 113504,
+          "cost_bdt": "2400.00"
+        },
+        {
+          "item": "Engine oil",
+          "date": "2026-08-02",
+          "km": null,
+          "cost_bdt": "3500.00"
+        }
+      ]
+    },
+    {
+      "id": "V11",
+      "owner_id": "O11",
+      "model": "Toyota Noah",
+      "plate": "Dhaka Metro Ba 81-2173",
+      "odometer_readings": [
+        { "date": "2026-08-02", "km": 109979 },
+        { "date": "2026-08-30", "km": 112144 }
+      ],
+      "service_items": [
+        {
+          "name": "Tax token",
+          "rule": "fixed_date",
+          "due_date": "2026-12-31",
+          "cost_bdt": "6500.00"
+        },
+        {
+          "name": "Coolant",
+          "rule": "period_months",
+          "every_months": 12,
+          "cost_bdt": "1800.00"
+        },
+        {
+          "name": "Spark plugs",
+          "rule": "distance_km",
+          "every_km": 20000,
+          "cost_bdt": "2400.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Coolant",
+          "date": "2025-12-23",
+          "km": null,
+          "cost_bdt": "1800.00"
+        },
+        {
+          "item": "Spark plugs",
+          "date": "2026-02-26",
+          "km": 92773,
+          "cost_bdt": "2400.00"
+        }
+      ]
+    },
+    {
+      "id": "V12",
+      "owner_id": "O12",
+      "model": "Suzuki Alto",
+      "plate": "Dhaka Metro Ba 30-8426",
+      "odometer_readings": [
+        { "date": "2026-07-30", "km": 89427 },
+        { "date": "2026-08-30", "km": 90772 }
+      ],
+      "service_items": [
+        {
+          "name": "Tax token",
+          "rule": "fixed_date",
+          "due_date": "2026-08-14",
+          "cost_bdt": "6500.00"
+        },
+        {
+          "name": "AC service",
+          "rule": "period_months",
+          "every_months": 12,
+          "cost_bdt": "4500.00"
+        },
+        {
+          "name": "Tyres",
+          "rule": "distance_km",
+          "every_km": 40000,
+          "cost_bdt": "32000.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Tyres",
+          "date": "2026-07-03",
+          "km": 51518,
+          "cost_bdt": "32000.00"
+        },
+        {
+          "item": "AC service",
+          "date": "2026-08-03",
+          "km": null,
+          "cost_bdt": "4500.00"
+        }
+      ]
+    },
+    {
+      "id": "V13",
+      "owner_id": "O13",
+      "model": "Honda Vezel",
+      "plate": "Dhaka Metro Kha 86-9083",
+      "odometer_readings": [
+        { "date": "2026-05-06", "km": 76971 },
+        { "date": "2026-06-19", "km": 78672 },
+        { "date": "2026-07-27", "km": 80191 },
+        { "date": "2026-08-30", "km": 81512 }
+      ],
+      "service_items": [
+        {
+          "name": "Battery warranty",
+          "rule": "fixed_date",
+          "due_date": "2026-10-27",
+          "cost_bdt": "9000.00"
+        },
+        {
+          "name": "Coolant",
+          "rule": "period_months",
+          "every_months": 12,
+          "cost_bdt": "1800.00"
+        },
+        {
+          "name": "Timing belt",
+          "rule": "distance_km",
+          "every_km": 80000,
+          "cost_bdt": "15000.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Timing belt",
+          "date": "2026-07-09",
+          "km": 2212,
+          "cost_bdt": "15000.00"
+        },
+        {
+          "item": "Coolant",
+          "date": "2026-07-10",
+          "km": null,
+          "cost_bdt": "1800.00"
+        }
+      ]
+    },
+    {
+      "id": "V14",
+      "owner_id": "O14",
+      "model": "Toyota Premio",
+      "plate": "Dhaka Metro Ba 72-2359",
+      "odometer_readings": [
+        { "date": "2026-07-03", "km": 151783 },
+        { "date": "2026-08-02", "km": 153200 },
+        { "date": "2026-08-30", "km": 154507 }
+      ],
+      "service_items": [
+        {
+          "name": "Tax token",
+          "rule": "fixed_date",
+          "due_date": "2026-09-22",
+          "cost_bdt": "6500.00"
+        },
+        {
+          "name": "Insurance",
+          "rule": "fixed_date",
+          "due_date": "2027-01-27",
+          "cost_bdt": "12000.00"
+        },
+        {
+          "name": "Air filter",
+          "rule": "period_months",
+          "every_months": 6,
+          "cost_bdt": "1200.00"
+        },
+        {
+          "name": "Engine oil",
+          "rule": "period_months",
+          "every_months": 3,
+          "cost_bdt": "3500.00"
+        },
+        {
+          "name": "Brake pads",
+          "rule": "distance_km",
+          "every_km": 10000,
+          "cost_bdt": "6000.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Air filter",
+          "date": "2025-11-10",
+          "km": null,
+          "cost_bdt": "1200.00"
+        },
+        {
+          "item": "Engine oil",
+          "date": "2025-12-24",
+          "km": null,
+          "cost_bdt": "3500.00"
+        },
+        {
+          "item": "Brake pads",
+          "date": "2026-02-13",
+          "km": 144100,
+          "cost_bdt": "6000.00"
+        }
+      ]
+    },
+    {
+      "id": "V15",
+      "owner_id": "O15",
+      "model": "Toyota Hiace",
+      "plate": "Dhaka Metro Ga 59-3749",
+      "odometer_readings": [
+        { "date": "2026-05-20", "km": 89435 },
+        { "date": "2026-07-11", "km": 93523 },
+        { "date": "2026-08-30", "km": 97463 }
+      ],
+      "service_items": [
+        {
+          "name": "Tax token",
+          "rule": "fixed_date",
+          "due_date": "2027-02-01",
+          "cost_bdt": "6500.00"
+        },
+        {
+          "name": "Battery warranty",
+          "rule": "fixed_date",
+          "due_date": "2026-07-30",
+          "cost_bdt": "9000.00"
+        },
+        {
+          "name": "Engine oil",
+          "rule": "period_months",
+          "every_months": 3,
+          "cost_bdt": "3500.00"
+        },
+        {
+          "name": "Tyres",
+          "rule": "distance_km",
+          "every_km": 40000,
+          "cost_bdt": "32000.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Engine oil",
+          "date": "2026-02-08",
+          "km": null,
+          "cost_bdt": "3500.00"
+        },
+        {
+          "item": "Tyres",
+          "date": "2026-04-09",
+          "km": 57066,
+          "cost_bdt": "32000.00"
+        }
+      ]
+    },
+    {
+      "id": "V16",
+      "owner_id": "O16",
+      "model": "Honda Grace",
+      "plate": "Dhaka Metro Cha 55-7440",
+      "odometer_readings": [
+        { "date": "2026-07-18", "km": 119928 },
+        { "date": "2026-08-30", "km": 121928 }
+      ],
+      "service_items": [
+        {
+          "name": "Fitness certificate",
+          "rule": "fixed_date",
+          "due_date": "2026-09-22",
+          "cost_bdt": "2500.00"
+        },
+        {
+          "name": "Engine oil",
+          "rule": "period_months",
+          "every_months": 3,
+          "cost_bdt": "3500.00"
+        },
+        {
+          "name": "Tyres",
+          "rule": "distance_km",
+          "every_km": 40000,
+          "cost_bdt": "32000.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Engine oil",
+          "date": "2025-11-02",
+          "km": null,
+          "cost_bdt": "3500.00"
+        },
+        {
+          "item": "Tyres",
+          "date": "2026-04-25",
+          "km": 81751,
+          "cost_bdt": "32000.00"
+        }
+      ]
+    },
+    {
+      "id": "V17",
+      "owner_id": "O17",
+      "model": "Toyota Noah",
+      "plate": "Dhaka Metro Ga 42-3975",
+      "odometer_readings": [
+        { "date": "2026-03-30", "km": 105245 },
+        { "date": "2026-05-19", "km": 107574 },
+        { "date": "2026-07-05", "km": 109745 },
+        { "date": "2026-08-30", "km": 112308 }
+      ],
+      "service_items": [
+        {
+          "name": "Insurance",
+          "rule": "fixed_date",
+          "due_date": "2026-11-23",
+          "cost_bdt": "12000.00"
+        },
+        {
+          "name": "Air filter",
+          "rule": "period_months",
+          "every_months": 6,
+          "cost_bdt": "1200.00"
+        },
+        {
+          "name": "Tyres",
+          "rule": "distance_km",
+          "every_km": 40000,
+          "cost_bdt": "32000.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Tyres",
+          "date": "2026-05-17",
+          "km": 73394,
+          "cost_bdt": "32000.00"
+        },
+        {
+          "item": "Air filter",
+          "date": "2026-07-02",
+          "km": null,
+          "cost_bdt": "1200.00"
+        }
+      ]
+    },
+    {
+      "id": "V18",
+      "owner_id": "O18",
+      "model": "Honda Vezel",
+      "plate": "Dhaka Metro Ba 54-7871",
+      "odometer_readings": [
+        { "date": "2026-05-29", "km": 97799 },
+        { "date": "2026-07-14", "km": 99788 },
+        { "date": "2026-08-30", "km": 101791 }
+      ],
+      "service_items": [
+        {
+          "name": "Battery warranty",
+          "rule": "fixed_date",
+          "due_date": "2026-08-22",
+          "cost_bdt": "9000.00"
+        },
+        {
+          "name": "Fitness certificate",
+          "rule": "fixed_date",
+          "due_date": "2026-12-05",
+          "cost_bdt": "2500.00"
+        },
+        {
+          "name": "Coolant",
+          "rule": "period_months",
+          "every_months": 12,
+          "cost_bdt": "1800.00"
+        },
+        {
+          "name": "Timing belt",
+          "rule": "distance_km",
+          "every_km": 80000,
+          "cost_bdt": "15000.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Coolant",
+          "date": "2026-04-16",
+          "km": null,
+          "cost_bdt": "1800.00"
+        },
+        {
+          "item": "Timing belt",
+          "date": "2026-05-22",
+          "km": 21881,
+          "cost_bdt": "15000.00"
+        }
+      ]
+    },
+    {
+      "id": "V19",
+      "owner_id": "O19",
+      "model": "Toyota Axio",
+      "plate": "Dhaka Metro Kha 83-3368",
+      "odometer_readings": [
+        { "date": "2026-08-07", "km": 149061 },
+        { "date": "2026-08-30", "km": 149712 }
+      ],
+      "service_items": [
+        {
+          "name": "Tax token",
+          "rule": "fixed_date",
+          "due_date": "2026-10-18",
+          "cost_bdt": "6500.00"
+        },
+        {
+          "name": "Insurance",
+          "rule": "fixed_date",
+          "due_date": "2026-12-03",
+          "cost_bdt": "12000.00"
+        },
+        {
+          "name": "Coolant",
+          "rule": "period_months",
+          "every_months": 12,
+          "cost_bdt": "1800.00"
+        },
+        {
+          "name": "Tyres",
+          "rule": "distance_km",
+          "every_km": 40000,
+          "cost_bdt": "32000.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Coolant",
+          "date": "2026-04-21",
+          "km": null,
+          "cost_bdt": "1800.00"
+        },
+        {
+          "item": "Tyres",
+          "date": "2026-07-09",
+          "km": 110546,
+          "cost_bdt": "32000.00"
+        }
+      ]
+    },
+    {
+      "id": "V20",
+      "owner_id": "O20",
+      "model": "Toyota Axio",
+      "plate": "Dhaka Metro Ba 18-3510",
+      "odometer_readings": [
+        { "date": "2026-06-18", "km": 63962 },
+        { "date": "2026-07-31", "km": 66607 },
+        { "date": "2026-08-30", "km": 68480 }
+      ],
+      "service_items": [
+        {
+          "name": "Battery warranty",
+          "rule": "fixed_date",
+          "due_date": "2027-03-05",
+          "cost_bdt": "9000.00"
+        },
+        {
+          "name": "Insurance",
+          "rule": "fixed_date",
+          "due_date": "2026-12-31",
+          "cost_bdt": "12000.00"
+        },
+        {
+          "name": "Engine oil",
+          "rule": "period_months",
+          "every_months": 3,
+          "cost_bdt": "3500.00"
+        },
+        {
+          "name": "Coolant",
+          "rule": "period_months",
+          "every_months": 12,
+          "cost_bdt": "1800.00"
+        },
+        {
+          "name": "Spark plugs",
+          "rule": "distance_km",
+          "every_km": 20000,
+          "cost_bdt": "2400.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Engine oil",
+          "date": "2025-10-22",
+          "km": null,
+          "cost_bdt": "3500.00"
+        },
+        {
+          "item": "Coolant",
+          "date": "2026-04-02",
+          "km": null,
+          "cost_bdt": "1800.00"
+        },
+        {
+          "item": "Spark plugs",
+          "date": "2026-06-06",
+          "km": 47753,
+          "cost_bdt": "2400.00"
+        }
+      ]
+    },
+    {
+      "id": "V21",
+      "owner_id": "O21",
+      "model": "Toyota Premio",
+      "plate": "Dhaka Metro Ba 66-1581",
+      "odometer_readings": [
+        { "date": "2026-05-10", "km": 25356 },
+        { "date": "2026-06-12", "km": 26507 },
+        { "date": "2026-07-30", "km": 28106 },
+        { "date": "2026-08-30", "km": 29125 }
+      ],
+      "service_items": [
+        {
+          "name": "Fitness certificate",
+          "rule": "fixed_date",
+          "due_date": "2026-08-19",
+          "cost_bdt": "2500.00"
+        },
+        {
+          "name": "Coolant",
+          "rule": "period_months",
+          "every_months": 12,
+          "cost_bdt": "1800.00"
+        },
+        {
+          "name": "Engine oil",
+          "rule": "period_months",
+          "every_months": 3,
+          "cost_bdt": "3500.00"
+        },
+        {
+          "name": "Brake pads",
+          "rule": "distance_km",
+          "every_km": 10000,
+          "cost_bdt": "6000.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Engine oil",
+          "date": "2026-03-11",
+          "km": null,
+          "cost_bdt": "3500.00"
+        },
+        {
+          "item": "Coolant",
+          "date": "2026-05-24",
+          "km": null,
+          "cost_bdt": "1800.00"
+        },
+        {
+          "item": "Brake pads",
+          "date": "2026-07-29",
+          "km": 20233,
+          "cost_bdt": "6000.00"
+        }
+      ]
+    },
+    {
+      "id": "V22",
+      "owner_id": "O22",
+      "model": "Toyota Premio",
+      "plate": "Dhaka Metro Kha 15-7211",
+      "odometer_readings": [
+        { "date": "2026-05-21", "km": 154544 },
+        { "date": "2026-06-10", "km": 154979 },
+        { "date": "2026-07-01", "km": 155428 },
+        { "date": "2026-08-30", "km": 156607 }
+      ],
+      "service_items": [
+        {
+          "name": "Insurance",
+          "rule": "fixed_date",
+          "due_date": "2026-09-16",
+          "cost_bdt": "12000.00"
+        },
+        {
+          "name": "Engine oil",
+          "rule": "period_months",
+          "every_months": 3,
+          "cost_bdt": "3500.00"
+        },
+        {
+          "name": "Coolant",
+          "rule": "period_months",
+          "every_months": 12,
+          "cost_bdt": "1800.00"
+        },
+        {
+          "name": "Tyres",
+          "rule": "distance_km",
+          "every_km": 40000,
+          "cost_bdt": "32000.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Engine oil",
+          "date": "2025-11-18",
+          "km": null,
+          "cost_bdt": "3500.00"
+        },
+        {
+          "item": "Tyres",
+          "date": "2026-05-19",
+          "km": 116803,
+          "cost_bdt": "32000.00"
+        },
+        {
+          "item": "Coolant",
+          "date": "2026-08-06",
+          "km": null,
+          "cost_bdt": "1800.00"
+        }
+      ]
+    },
+    {
+      "id": "V23",
+      "owner_id": "O23",
+      "model": "Toyota Noah",
+      "plate": "Dhaka Metro Ga 28-3288",
+      "odometer_readings": [
+        { "date": "2026-05-13", "km": 58199 },
+        { "date": "2026-07-07", "km": 61972 },
+        { "date": "2026-08-30", "km": 65707 }
+      ],
+      "service_items": [
+        {
+          "name": "Battery warranty",
+          "rule": "fixed_date",
+          "due_date": "2027-02-22",
+          "cost_bdt": "9000.00"
+        },
+        {
+          "name": "Coolant",
+          "rule": "period_months",
+          "every_months": 12,
+          "cost_bdt": "1800.00"
+        },
+        {
+          "name": "Engine oil",
+          "rule": "period_months",
+          "every_months": 3,
+          "cost_bdt": "3500.00"
+        },
+        {
+          "name": "Brake pads",
+          "rule": "distance_km",
+          "every_km": 10000,
+          "cost_bdt": "6000.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Coolant",
+          "date": "2025-10-06",
+          "km": null,
+          "cost_bdt": "1800.00"
+        },
+        {
+          "item": "Brake pads",
+          "date": "2026-05-09",
+          "km": 55103,
+          "cost_bdt": "6000.00"
+        },
+        {
+          "item": "Engine oil",
+          "date": "2026-05-23",
+          "km": null,
+          "cost_bdt": "3500.00"
+        }
+      ]
+    },
+    {
+      "id": "V24",
+      "owner_id": "O24",
+      "model": "Honda Grace",
+      "plate": "Dhaka Metro Ba 33-3763",
+      "odometer_readings": [
+        { "date": "2026-05-10", "km": 133959 },
+        { "date": "2026-06-25", "km": 135780 },
+        { "date": "2026-08-07", "km": 137446 },
+        { "date": "2026-08-30", "km": 138374 }
+      ],
+      "service_items": [
+        {
+          "name": "Battery warranty",
+          "rule": "fixed_date",
+          "due_date": "2026-10-01",
+          "cost_bdt": "9000.00"
+        },
+        {
+          "name": "Insurance",
+          "rule": "fixed_date",
+          "due_date": "2026-10-16",
+          "cost_bdt": "12000.00"
+        },
+        {
+          "name": "Coolant",
+          "rule": "period_months",
+          "every_months": 12,
+          "cost_bdt": "1800.00"
+        },
+        {
+          "name": "Brake pads",
+          "rule": "distance_km",
+          "every_km": 10000,
+          "cost_bdt": "6000.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Brake pads",
+          "date": "2026-04-05",
+          "km": 129792,
+          "cost_bdt": "6000.00"
+        },
+        {
+          "item": "Coolant",
+          "date": "2026-04-09",
+          "km": null,
+          "cost_bdt": "1800.00"
+        }
+      ]
+    },
+    {
+      "id": "V25",
+      "owner_id": "O25",
+      "model": "Suzuki Alto",
+      "plate": "Dhaka Metro Ga 77-9880",
+      "odometer_readings": [
+        { "date": "2026-04-26", "km": 97663 },
+        { "date": "2026-06-19", "km": 101724 },
+        { "date": "2026-07-29", "km": 104693 },
+        { "date": "2026-08-30", "km": 107058 }
+      ],
+      "service_items": [
+        {
+          "name": "Battery warranty",
+          "rule": "fixed_date",
+          "due_date": "2026-10-14",
+          "cost_bdt": "9000.00"
+        },
+        {
+          "name": "Insurance",
+          "rule": "fixed_date",
+          "due_date": "2027-01-24",
+          "cost_bdt": "12000.00"
+        },
+        {
+          "name": "Air filter",
+          "rule": "period_months",
+          "every_months": 6,
+          "cost_bdt": "1200.00"
+        },
+        {
+          "name": "Timing belt",
+          "rule": "distance_km",
+          "every_km": 80000,
+          "cost_bdt": "15000.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Air filter",
+          "date": "2025-12-20",
+          "km": null,
+          "cost_bdt": "1200.00"
+        },
+        {
+          "item": "Timing belt",
+          "date": "2026-04-19",
+          "km": 26382,
+          "cost_bdt": "15000.00"
+        }
+      ]
+    },
+    {
+      "id": "V26",
+      "owner_id": "O26",
+      "model": "Mitsubishi Pajero",
+      "plate": "Dhaka Metro Kha 15-6408",
+      "odometer_readings": [
+        { "date": "2026-07-21", "km": 137298 },
+        { "date": "2026-08-30", "km": 139372 }
+      ],
+      "service_items": [
+        {
+          "name": "Insurance",
+          "rule": "fixed_date",
+          "due_date": "2026-10-25",
+          "cost_bdt": "12000.00"
+        },
+        {
+          "name": "Coolant",
+          "rule": "period_months",
+          "every_months": 12,
+          "cost_bdt": "1800.00"
+        },
+        {
+          "name": "Engine oil",
+          "rule": "period_months",
+          "every_months": 3,
+          "cost_bdt": "3500.00"
+        },
+        {
+          "name": "Brake pads",
+          "rule": "distance_km",
+          "every_km": 10000,
+          "cost_bdt": "6000.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Engine oil",
+          "date": "2025-09-07",
+          "km": null,
+          "cost_bdt": "3500.00"
+        },
+        {
+          "item": "Coolant",
+          "date": "2025-10-21",
+          "km": null,
+          "cost_bdt": "1800.00"
+        },
+        {
+          "item": "Brake pads",
+          "date": "2026-05-19",
+          "km": 129498,
+          "cost_bdt": "6000.00"
+        }
+      ]
+    },
+    {
+      "id": "V27",
+      "owner_id": "O27",
+      "model": "Honda Vezel",
+      "plate": "Dhaka Metro Cha 92-3406",
+      "odometer_readings": [
+        { "date": "2026-07-05", "km": 152101 },
+        { "date": "2026-08-30", "km": 156013 }
+      ],
+      "service_items": [
+        {
+          "name": "Tax token",
+          "rule": "fixed_date",
+          "due_date": "2026-09-15",
+          "cost_bdt": "6500.00"
+        },
+        {
+          "name": "Air filter",
+          "rule": "period_months",
+          "every_months": 6,
+          "cost_bdt": "1200.00"
+        },
+        {
+          "name": "Tyres",
+          "rule": "distance_km",
+          "every_km": 40000,
+          "cost_bdt": "32000.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Air filter",
+          "date": "2025-09-25",
+          "km": null,
+          "cost_bdt": "1200.00"
+        },
+        {
+          "item": "Tyres",
+          "date": "2026-06-03",
+          "km": 115227,
+          "cost_bdt": "32000.00"
+        }
+      ]
+    },
+    {
+      "id": "V28",
+      "owner_id": "O01",
+      "model": "Suzuki Alto",
+      "plate": "Dhaka Metro Kha 78-5349",
+      "odometer_readings": [
+        { "date": "2026-04-29", "km": 136947 },
+        { "date": "2026-06-21", "km": 137892 },
+        { "date": "2026-07-18", "km": 138387 },
+        { "date": "2026-08-30", "km": 139157 }
+      ],
+      "service_items": [
+        {
+          "name": "Battery warranty",
+          "rule": "fixed_date",
+          "due_date": "2027-03-16",
+          "cost_bdt": "9000.00"
+        },
+        {
+          "name": "Fitness certificate",
+          "rule": "fixed_date",
+          "due_date": "2027-01-14",
+          "cost_bdt": "2500.00"
+        },
+        {
+          "name": "Air filter",
+          "rule": "period_months",
+          "every_months": 6,
+          "cost_bdt": "1200.00"
+        },
+        {
+          "name": "Engine oil",
+          "rule": "period_months",
+          "every_months": 3,
+          "cost_bdt": "3500.00"
+        },
+        {
+          "name": "Tyres",
+          "rule": "distance_km",
+          "every_km": 40000,
+          "cost_bdt": "32000.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Air filter",
+          "date": "2025-12-20",
+          "km": null,
+          "cost_bdt": "1200.00"
+        },
+        {
+          "item": "Engine oil",
+          "date": "2026-01-17",
+          "km": null,
+          "cost_bdt": "3500.00"
+        },
+        {
+          "item": "Tyres",
+          "date": "2026-05-08",
+          "km": 98632,
+          "cost_bdt": "32000.00"
+        }
+      ]
+    },
+    {
+      "id": "V29",
+      "owner_id": "O01",
+      "model": "Nissan X-Trail",
+      "plate": "Dhaka Metro Ga 75-4053",
+      "odometer_readings": [
+        { "date": "2026-04-12", "km": 47885 },
+        { "date": "2026-05-23", "km": 51179 },
+        { "date": "2026-07-13", "km": 55244 },
+        { "date": "2026-08-30", "km": 59089 }
+      ],
+      "service_items": [
+        {
+          "name": "Tax token",
+          "rule": "fixed_date",
+          "due_date": "2026-11-29",
+          "cost_bdt": "6500.00"
+        },
+        {
+          "name": "Battery warranty",
+          "rule": "fixed_date",
+          "due_date": "2026-08-18",
+          "cost_bdt": "9000.00"
+        },
+        {
+          "name": "AC service",
+          "rule": "period_months",
+          "every_months": 12,
+          "cost_bdt": "4500.00"
+        },
+        {
+          "name": "Brake pads",
+          "rule": "distance_km",
+          "every_km": 10000,
+          "cost_bdt": "6000.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "AC service",
+          "date": "2025-10-25",
+          "km": null,
+          "cost_bdt": "4500.00"
+        },
+        {
+          "item": "Brake pads",
+          "date": "2026-04-01",
+          "km": 50340,
+          "cost_bdt": "6000.00"
+        }
+      ]
+    },
+    {
+      "id": "V30",
+      "owner_id": "O10",
+      "model": "Honda Grace",
+      "plate": "Dhaka Metro Cha 78-9147",
+      "odometer_readings": [
+        { "date": "2026-07-01", "km": 47324 },
+        { "date": "2026-08-30", "km": 51489 }
+      ],
+      "service_items": [
+        {
+          "name": "Battery warranty",
+          "rule": "fixed_date",
+          "due_date": "2027-01-25",
+          "cost_bdt": "9000.00"
+        },
+        {
+          "name": "Fitness certificate",
+          "rule": "fixed_date",
+          "due_date": "2026-12-16",
+          "cost_bdt": "2500.00"
+        },
+        {
+          "name": "AC service",
+          "rule": "period_months",
+          "every_months": 12,
+          "cost_bdt": "4500.00"
+        },
+        {
+          "name": "Tyres",
+          "rule": "distance_km",
+          "every_km": 40000,
+          "cost_bdt": "32000.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "AC service",
+          "date": "2025-11-14",
+          "km": null,
+          "cost_bdt": "4500.00"
+        },
+        {
+          "item": "Tyres",
+          "date": "2026-03-10",
+          "km": 12095,
+          "cost_bdt": "32000.00"
+        }
+      ]
+    },
+    {
+      "id": "V31",
+      "owner_id": "O06",
+      "model": "Nissan X-Trail",
+      "plate": "Dhaka Metro Kha 75-2028",
+      "odometer_readings": [
+        { "date": "2026-05-04", "km": 26698 },
+        { "date": "2026-06-21", "km": 29042 },
+        { "date": "2026-07-24", "km": 30653 },
+        { "date": "2026-08-30", "km": 32469 }
+      ],
+      "service_items": [
+        {
+          "name": "Tax token",
+          "rule": "fixed_date",
+          "due_date": "2026-09-27",
+          "cost_bdt": "6500.00"
+        },
+        {
+          "name": "Coolant",
+          "rule": "period_months",
+          "every_months": 12,
+          "cost_bdt": "1800.00"
+        },
+        {
+          "name": "Timing belt",
+          "rule": "distance_km",
+          "every_km": 80000,
+          "cost_bdt": "15000.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Timing belt",
+          "date": "2026-07-02",
+          "km": 0,
+          "cost_bdt": "15000.00"
+        },
+        {
+          "item": "Coolant",
+          "date": "2026-07-11",
+          "km": null,
+          "cost_bdt": "1800.00"
+        }
+      ]
+    },
+    {
+      "id": "V32",
+      "owner_id": "O05",
+      "model": "Nissan X-Trail",
+      "plate": "Dhaka Metro Kha 13-9636",
+      "odometer_readings": [
+        { "date": "2026-05-23", "km": 55718 },
+        { "date": "2026-06-17", "km": 57592 },
+        { "date": "2026-07-17", "km": 59834 },
+        { "date": "2026-08-30", "km": 63185 }
+      ],
+      "service_items": [
+        {
+          "name": "Fitness certificate",
+          "rule": "fixed_date",
+          "due_date": "2026-10-19",
+          "cost_bdt": "2500.00"
+        },
+        {
+          "name": "AC service",
+          "rule": "period_months",
+          "every_months": 12,
+          "cost_bdt": "4500.00"
+        },
+        {
+          "name": "Tyres",
+          "rule": "distance_km",
+          "every_km": 40000,
+          "cost_bdt": "32000.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "AC service",
+          "date": "2026-02-11",
+          "km": null,
+          "cost_bdt": "4500.00"
+        },
+        {
+          "item": "Tyres",
+          "date": "2026-07-14",
+          "km": 24150,
+          "cost_bdt": "32000.00"
+        }
+      ]
+    },
+    {
+      "id": "V33",
+      "owner_id": "O26",
+      "model": "Toyota Hiace",
+      "plate": "Dhaka Metro Cha 87-2653",
+      "odometer_readings": [
+        { "date": "2026-05-22", "km": 139319 },
+        { "date": "2026-06-26", "km": 141227 },
+        { "date": "2026-08-02", "km": 143266 },
+        { "date": "2026-08-30", "km": 144809 }
+      ],
+      "service_items": [
+        {
+          "name": "Battery warranty",
+          "rule": "fixed_date",
+          "due_date": "2027-03-15",
+          "cost_bdt": "9000.00"
+        },
+        {
+          "name": "Engine oil",
+          "rule": "period_months",
+          "every_months": 3,
+          "cost_bdt": "3500.00"
+        },
+        {
+          "name": "Coolant",
+          "rule": "period_months",
+          "every_months": 12,
+          "cost_bdt": "1800.00"
+        },
+        {
+          "name": "Spark plugs",
+          "rule": "distance_km",
+          "every_km": 20000,
+          "cost_bdt": "2400.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Engine oil",
+          "date": "2025-11-11",
+          "km": null,
+          "cost_bdt": "3500.00"
+        },
+        {
+          "item": "Coolant",
+          "date": "2026-07-07",
+          "km": null,
+          "cost_bdt": "1800.00"
+        },
+        {
+          "item": "Spark plugs",
+          "date": "2026-07-09",
+          "km": 126051,
+          "cost_bdt": "2400.00"
+        }
+      ]
+    },
+    {
+      "id": "V34",
+      "owner_id": "O06",
+      "model": "Mitsubishi Pajero",
+      "plate": "Dhaka Metro Ba 61-4299",
+      "odometer_readings": [
+        { "date": "2026-07-25", "km": 106819 },
+        { "date": "2026-08-30", "km": 108422 }
+      ],
+      "service_items": [
+        {
+          "name": "Battery warranty",
+          "rule": "fixed_date",
+          "due_date": "2027-02-21",
+          "cost_bdt": "9000.00"
+        },
+        {
+          "name": "Coolant",
+          "rule": "period_months",
+          "every_months": 12,
+          "cost_bdt": "1800.00"
+        },
+        {
+          "name": "Tyres",
+          "rule": "distance_km",
+          "every_km": 40000,
+          "cost_bdt": "32000.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Coolant",
+          "date": "2026-02-11",
+          "km": null,
+          "cost_bdt": "1800.00"
+        },
+        {
+          "item": "Tyres",
+          "date": "2026-07-30",
+          "km": 68214,
+          "cost_bdt": "32000.00"
+        }
+      ]
+    },
+    {
+      "id": "V35",
+      "owner_id": "O21",
+      "model": "Honda Grace",
+      "plate": "Dhaka Metro Kha 57-3547",
+      "odometer_readings": [
+        { "date": "2026-06-25", "km": 53042 },
+        { "date": "2026-07-30", "km": 54108 },
+        { "date": "2026-08-30", "km": 55068 }
+      ],
+      "service_items": [
+        {
+          "name": "Insurance",
+          "rule": "fixed_date",
+          "due_date": "2027-01-13",
+          "cost_bdt": "12000.00"
+        },
+        {
+          "name": "Air filter",
+          "rule": "period_months",
+          "every_months": 6,
+          "cost_bdt": "1200.00"
+        },
+        {
+          "name": "Engine oil",
+          "rule": "period_months",
+          "every_months": 3,
+          "cost_bdt": "3500.00"
+        },
+        {
+          "name": "Spark plugs",
+          "rule": "distance_km",
+          "every_km": 20000,
+          "cost_bdt": "2400.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Engine oil",
+          "date": "2026-02-06",
+          "km": null,
+          "cost_bdt": "3500.00"
+        },
+        {
+          "item": "Air filter",
+          "date": "2026-05-27",
+          "km": null,
+          "cost_bdt": "1200.00"
+        },
+        {
+          "item": "Spark plugs",
+          "date": "2026-06-17",
+          "km": 36227,
+          "cost_bdt": "2400.00"
+        }
+      ]
+    },
+    {
+      "id": "V36",
+      "owner_id": "O24",
+      "model": "Toyota Noah",
+      "plate": "Dhaka Metro Ba 65-4207",
+      "odometer_readings": [
+        { "date": "2026-05-07", "km": 37304 },
+        { "date": "2026-07-01", "km": 40026 },
+        { "date": "2026-08-30", "km": 43036 }
+      ],
+      "service_items": [
+        {
+          "name": "Tax token",
+          "rule": "fixed_date",
+          "due_date": "2026-11-17",
+          "cost_bdt": "6500.00"
+        },
+        {
+          "name": "Battery warranty",
+          "rule": "fixed_date",
+          "due_date": "2026-08-22",
+          "cost_bdt": "9000.00"
+        },
+        {
+          "name": "Engine oil",
+          "rule": "period_months",
+          "every_months": 3,
+          "cost_bdt": "3500.00"
+        },
+        {
+          "name": "Brake pads",
+          "rule": "distance_km",
+          "every_km": 10000,
+          "cost_bdt": "6000.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Engine oil",
+          "date": "2026-06-19",
+          "km": null,
+          "cost_bdt": "3500.00"
+        },
+        {
+          "item": "Brake pads",
+          "date": "2026-07-27",
+          "km": 34082,
+          "cost_bdt": "6000.00"
+        }
+      ]
+    },
+    {
+      "id": "V37",
+      "owner_id": "O17",
+      "model": "Nissan X-Trail",
+      "plate": "Dhaka Metro Kha 58-9600",
+      "odometer_readings": [
+        { "date": "2026-06-13", "km": 71906 },
+        { "date": "2026-07-04", "km": 73154 },
+        { "date": "2026-08-30", "km": 76632 }
+      ],
+      "service_items": [
+        {
+          "name": "Insurance",
+          "rule": "fixed_date",
+          "due_date": "2026-12-25",
+          "cost_bdt": "12000.00"
+        },
+        {
+          "name": "Tax token",
+          "rule": "fixed_date",
+          "due_date": "2026-09-10",
+          "cost_bdt": "6500.00"
+        },
+        {
+          "name": "Coolant",
+          "rule": "period_months",
+          "every_months": 12,
+          "cost_bdt": "1800.00"
+        },
+        {
+          "name": "Timing belt",
+          "rule": "distance_km",
+          "every_km": 80000,
+          "cost_bdt": "15000.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Coolant",
+          "date": "2025-11-14",
+          "km": null,
+          "cost_bdt": "1800.00"
+        },
+        {
+          "item": "Timing belt",
+          "date": "2026-03-13",
+          "km": 0,
+          "cost_bdt": "15000.00"
+        }
+      ]
+    },
+    {
+      "id": "V38",
+      "owner_id": "O03",
+      "model": "Mitsubishi Pajero",
+      "plate": "Dhaka Metro Cha 67-1148",
+      "odometer_readings": [
+        { "date": "2026-06-15", "km": 24204 },
+        { "date": "2026-07-28", "km": 25778 },
+        { "date": "2026-08-30", "km": 26940 }
+      ],
+      "service_items": [
+        {
+          "name": "Tax token",
+          "rule": "fixed_date",
+          "due_date": "2027-01-07",
+          "cost_bdt": "6500.00"
+        },
+        {
+          "name": "Insurance",
+          "rule": "fixed_date",
+          "due_date": "2026-07-31",
+          "cost_bdt": "12000.00"
+        },
+        {
+          "name": "Air filter",
+          "rule": "period_months",
+          "every_months": 6,
+          "cost_bdt": "1200.00"
+        },
+        {
+          "name": "Brake pads",
+          "rule": "distance_km",
+          "every_km": 10000,
+          "cost_bdt": "6000.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Air filter",
+          "date": "2025-12-06",
+          "km": null,
+          "cost_bdt": "1200.00"
+        },
+        {
+          "item": "Brake pads",
+          "date": "2026-06-12",
+          "km": 17024,
+          "cost_bdt": "6000.00"
+        }
+      ]
+    },
+    {
+      "id": "V39",
+      "owner_id": "O07",
+      "model": "Honda Vezel",
+      "plate": "Dhaka Metro Cha 17-5506",
+      "odometer_readings": [
+        { "date": "2026-05-26", "km": 87989 },
+        { "date": "2026-07-14", "km": 90814 },
+        { "date": "2026-08-30", "km": 93481 }
+      ],
+      "service_items": [
+        {
+          "name": "Tax token",
+          "rule": "fixed_date",
+          "due_date": "2026-12-15",
+          "cost_bdt": "6500.00"
+        },
+        {
+          "name": "AC service",
+          "rule": "period_months",
+          "every_months": 12,
+          "cost_bdt": "4500.00"
+        },
+        {
+          "name": "Timing belt",
+          "rule": "distance_km",
+          "every_km": 80000,
+          "cost_bdt": "15000.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Timing belt",
+          "date": "2026-07-07",
+          "km": 13686,
+          "cost_bdt": "15000.00"
+        },
+        {
+          "item": "AC service",
+          "date": "2026-08-04",
+          "km": null,
+          "cost_bdt": "4500.00"
+        }
+      ]
+    },
+    {
+      "id": "V40",
+      "owner_id": "O08",
+      "model": "Toyota Axio",
+      "plate": "Dhaka Metro Ga 62-4763",
+      "odometer_readings": [
+        { "date": "2026-06-15", "km": 14633 },
+        { "date": "2026-07-27", "km": 17873 },
+        { "date": "2026-08-30", "km": 20507 }
+      ],
+      "service_items": [
+        {
+          "name": "Battery warranty",
+          "rule": "fixed_date",
+          "due_date": "2026-12-02",
+          "cost_bdt": "9000.00"
+        },
+        {
+          "name": "Tax token",
+          "rule": "fixed_date",
+          "due_date": "2026-11-23",
+          "cost_bdt": "6500.00"
+        },
+        {
+          "name": "Air filter",
+          "rule": "period_months",
+          "every_months": 6,
+          "cost_bdt": "1200.00"
+        },
+        {
+          "name": "Timing belt",
+          "rule": "distance_km",
+          "every_km": 80000,
+          "cost_bdt": "15000.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Air filter",
+          "date": "2025-08-08",
+          "km": null,
+          "cost_bdt": "1200.00"
+        },
+        {
+          "item": "Timing belt",
+          "date": "2026-05-27",
+          "km": 0,
+          "cost_bdt": "15000.00"
+        }
+      ]
+    },
+    {
+      "id": "V41",
+      "owner_id": "O22",
+      "model": "Toyota Allion",
+      "plate": "Dhaka Metro Kha 94-8351",
+      "odometer_readings": [
+        { "date": "2026-04-17", "km": 103160 },
+        { "date": "2026-05-27", "km": 104244 },
+        { "date": "2026-07-05", "km": 105336 },
+        { "date": "2026-08-30", "km": 106816 }
+      ],
+      "service_items": [
+        {
+          "name": "Battery warranty",
+          "rule": "fixed_date",
+          "due_date": "2026-11-30",
+          "cost_bdt": "9000.00"
+        },
+        {
+          "name": "Fitness certificate",
+          "rule": "fixed_date",
+          "due_date": "2026-12-26",
+          "cost_bdt": "2500.00"
+        },
+        {
+          "name": "AC service",
+          "rule": "period_months",
+          "every_months": 12,
+          "cost_bdt": "4500.00"
+        },
+        {
+          "name": "Tyres",
+          "rule": "distance_km",
+          "every_km": 40000,
+          "cost_bdt": "32000.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "AC service",
+          "date": "2025-09-18",
+          "km": null,
+          "cost_bdt": "4500.00"
+        },
+        {
+          "item": "Tyres",
+          "date": "2026-04-23",
+          "km": 66337,
+          "cost_bdt": "32000.00"
+        }
+      ]
+    },
+    {
+      "id": "V42",
+      "owner_id": "O17",
+      "model": "Toyota Noah",
+      "plate": "Dhaka Metro Cha 42-6224",
+      "odometer_readings": [
+        { "date": "2026-06-17", "km": 66275 },
+        { "date": "2026-07-08", "km": 67479 },
+        { "date": "2026-08-30", "km": 70524 }
+      ],
+      "service_items": [
+        {
+          "name": "Insurance",
+          "rule": "fixed_date",
+          "due_date": "2026-10-26",
+          "cost_bdt": "12000.00"
+        },
+        {
+          "name": "Tax token",
+          "rule": "fixed_date",
+          "due_date": "2027-01-22",
+          "cost_bdt": "6500.00"
+        },
+        {
+          "name": "AC service",
+          "rule": "period_months",
+          "every_months": 12,
+          "cost_bdt": "4500.00"
+        },
+        {
+          "name": "Tyres",
+          "rule": "distance_km",
+          "every_km": 40000,
+          "cost_bdt": "32000.00"
+        }
+      ],
+      "service_history": [
+        {
+          "item": "Tyres",
+          "date": "2026-04-06",
+          "km": 30811,
+          "cost_bdt": "32000.00"
+        },
+        {
+          "item": "AC service",
+          "date": "2026-05-30",
+          "km": null,
+          "cost_bdt": "4500.00"
+        }
+      ]
+    }
+  ]
+}

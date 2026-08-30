@@ -1,0 +1,120 @@
+{
+  "team_id": "LSH26-T027",
+  "problem_id": "P09",
+  "repository_name": "lsh26-t027-p09",
+  "live_url": "TODO — not deployed yet; the app runs locally with `npm run dev` on http://localhost:3000",
+  "demo_video_url_optional": "",
+  "event_start_code": "LSH26-8490-C900",
+  "repository_created_before_release": false,
+  "pre_event_materials": [],
+  "sample_data": {
+    "loads_published_fixture": true,
+    "method": "POST a case JSON to /api/run",
+    "reset_instructions": "Judged path needs no reset: POST /api/run is stateless, unauthenticated, takes a whole case in the request body and never touches the database, so every call starts from the data supplied. The published case PUB-01 ships at src/data/case-pub-01.json and `npx tsx src/lib/engine-check.ts` reproduces the documented answers from it offline. The signed-in workshop app reads from PostgreSQL, which was seeded out of band from the 25-case public drop (P09_vehicle_service_public.json); that file is not committed and no seed script exists, so the database cannot currently be rebuilt from a clone. See known_limitations."
+  },
+  "problem_solving_method": "All domain calculation lives in one pure, I/O-free module (src/lib/engine.ts) that takes the published case shape and returns per-item status, the ranked call list and the 8-week workload. `today` is a field on the case, never the system clock, so results are deterministic and reproducible. PostgreSQL stores the same shape and src/lib/case-db.ts serialises it back byte-identical to the published file, so the engine, the UI and the self-check run unchanged over either source — src/lib/engine-check.ts asserts the documented PUB-01 answers against both the JSON fixture and the database-assembled case, and any drift in the persistence layer shows up as a wrong number rather than a subtly wrong ordering. A separate, optional Python model (ml/) predicts when an owner will actually turn up, which is a different question from when work is due; it is treated as an optimisation, not a dependency, and /api/visit falls back to a committed lookup table whenever the model service is unreachable.",
+  "requirements": {
+    "R1": {
+      "status": "complete",
+      "evidence": "25 published cases in PostgreSQL, each 27 owners and 42 vehicles with 3-5 service items (all three rules), 2-4 odometer readings and past service records — 1,050 vehicles, 4,188 service items and 2,610 history rows as seeded, growing as customers are entered through the app. Schema in prisma/schema.prisma (Case, Owner, Vehicle, OdometerReading, ServiceItem, ServiceRecord); assembly in src/lib/case-db.ts; offline fixture at src/data/case-pub-01.json. New customers, vehicles and service items can also be entered in the app: src/components/due-book/intake-form.tsx, POST /api/vehicle and POST /api/service-item, backed by intakeVehicle() / addServiceItem() in src/lib/case-db.ts."
+    },
+    "R2": {
+      "status": "complete",
+      "evidence": "src/lib/engine.ts computeItem() implements all three rules — fixed_date reads the printed expiry; period_months adds calendar months to the last service, clamped to month end (31 Jan + 1 month = 28 Feb); distance_km projects the due date from last-service odometer + every_km divided by kmPerDay(), derived from that vehicle's own reading history, with a fleet-median fallback for single-reading vehicles and a zero-rate guard that never divides. Every item is classified overdue / due_soon / fine. Verified by src/lib/engine-check.ts, which reproduces the documented PUB-01 answers exactly from both the file and the database: top-6 call list (V28 117,690 down to V07 64,000), backlog 45 jobs / 387,700, and the eight weekly buckets."
+    },
+    "R3": {
+      "status": "complete",
+      "evidence": "Daily call list at /dashboard (src/components/due-book/call-list.tsx), one row per owner+vehicle with name, phone, model, plate, the due items and a plain-English reason for each date. Ranked by score = cost x urgency x safety weight summed over the vehicle's items, so lateness and value are combined; the arithmetic behind each row is printed (e.g. '32,000 x 1.97 x 1.5 = 94,400 + 19,250 + 4,040') so any position is defensible. Sort modes: score (default), most overdue, highest value. buildCallList() in src/lib/engine.ts."
+    },
+    "R4": {
+      "status": "complete",
+      "evidence": "Vehicle page (src/components/due-book/vehicle-detail.tsx) lists every service item with its next due date, status, cost and the reason for that date, plus odometer, km/day and service history. 'Record a completed service' appends a history row and resets that one item — POST /api/service to recordServiceDb() in src/lib/case-db.ts — and the page then names the item whose next-due date moved and counts the ones that did not, so the one-item reset guarantee is shown on screen rather than assumed. Odometer re-entry (POST /api/odometer) upserts the reading dated `today` and every distance-based estimate on the vehicle recomputes."
+    }
+  },
+  "beyond_requirements": [
+    "8-week workload forecast with a per-week job list (src/components/due-book/workload.tsx).",
+    "Copy-ready reminder message per owner, merged across their vehicles, plus a wa.me deep link that opens WhatsApp with the message already typed — no WhatsApp Business account or API involved.",
+    "Search across customer name, phone, plate, model and vehicle id, grouped by customer (src/components/due-book/search.tsx).",
+    "Method page that shows how every number on the screen is derived, including a worked example of the top-ranked vehicle.",
+    "Adjustable due-soon window (14/30/45 days), km/day basis (all readings or last two) and safety weighting on/off, so the ranking rule can be interrogated live.",
+    "Next-visit prediction: a random forest over 56 observed inter-visit gaps predicts when an owner actually returns, and flags the vehicles that are due but will not come back on their own (ml/, src/lib/visit.ts, POST /api/visit).",
+    "Multi-user auth with each account pinned to one workshop; the workshop is read from the session on every request and never from the query string or body."
+  ],
+  "team_members": [
+    {
+      "registered_name": "Tanvir Hasan",
+      "github_username": "tanvirhasan91919",
+      "major_contribution": "TODO — no commits authored in this repository at time of writing.",
+      "evidence_paths_or_commits": []
+    },
+    {
+      "registered_name": "Asir Hameem",
+      "github_username": "asirhameem",
+      "major_contribution": "Persistence and the workshop application — reconciled the Prisma schema with the seeded multi-case database, the case assembly and write layer, the API routes, the dashboard UI (call list, vehicles, workload, reminders, method, search), walk-in customer/vehicle intake, per-account workshop scoping, and the WhatsApp reminder link.",
+      "evidence_paths_or_commits": [
+        "prisma/schema.prisma",
+        "src/lib/case-db.ts",
+        "src/lib/due-book-view.ts",
+        "src/components/due-book/",
+        "src/app/api/",
+        "51faea6",
+        "ac92d1f",
+        "9e32881",
+        "8c548a5",
+        "e8f7234",
+        "a3dada6",
+        "c333bb5"
+      ]
+    },
+    {
+      "registered_name": "Zubayer Bin Matin",
+      "github_username": "zbmzubayer",
+      "major_contribution": "Project setup and the auth system — jose JWT sessions, argon2 password hashing, login/register/logout flows and route protection.",
+      "evidence_paths_or_commits": [
+        "src/lib/auth.ts",
+        "src/actions/auth.action.ts",
+        "src/proxy.ts",
+        "68ae139",
+        "a4564fc"
+      ]
+    },
+    {
+      "registered_name": "Zahid Chowdhury",
+      "github_username": "zahid0023",
+      "major_contribution": "TODO — no commits authored in this repository at time of writing.",
+      "evidence_paths_or_commits": []
+    }
+  ],
+  "major_design_decisions": [
+    "`today` is a field on the case, not the system clock — no new Date() in the engine, so every due date, status and ranking is deterministic and reproducible by judges.",
+    "All domain calculation sits in one pure module (src/lib/engine.ts) with no I/O, so it is testable without a database and runs identically over the JSON fixture or the PostgreSQL rows.",
+    "Distance-based items are projected from each vehicle's own km/day, computed from its odometer history, with a fleet-median fallback for a single reading and a zero-rate guard that reports 'cannot come due' instead of dividing.",
+    "An item with no service history counts from the odometer reading on the clock, not from zero — otherwise a newly entered car reads thousands of days overdue and heads the call list.",
+    "Dates are stored as plain ISO strings and money as Decimal(10,2) serialised with toFixed(2), so the assembled case is byte-identical to the published fixture and no timezone bug can enter through SQL.",
+    "Vehicle and owner ids are unique only within a case, so caseId is part of every primary key, unique constraint and foreign key, and every query is scoped by it.",
+    "A signed-in user works out of exactly one workshop, read from the session on every request and never accepted from the client, so no account can read or write another workshop's data by changing a parameter.",
+    "Service items are chosen from a closed catalogue of the twelve services the published data contains, never typed: the safety weighting matches on the item name, so a typed 'Tyre' would silently lose the 1.5x weight and rank the car too low with no error anywhere.",
+    "The ML service is an optimisation, not a dependency — /api/visit answers from a committed lookup table whenever the model is unreachable, and reports which source it used, so a dropped tunnel degrades visibly instead of breaking the demo.",
+    "WhatsApp reminders are a wa.me deep link rather than an API integration: the workshop reviews the message and sends it themselves, and the app needs no Business account, token or outbound messaging permission."
+  ],
+  "known_limitations": [
+    "The database cannot be rebuilt from a clone: the 25-case public drop is not committed and there is no seed script, so a fresh environment can run /api/run and the offline self-check but not the signed-in workshop app without re-seeding by hand.",
+    "PUB-01 is the pinned fixture that engine-check asserts against, so recording a service against it through the UI would invalidate that check; user accounts are deliberately pinned to other cases to prevent this.",
+    "The visit model is trained on 56 observed inter-visit gaps from 42 vehicles. It beats the trailing-average baseline (MAE 46.2 days vs 58.2, and none of 12 shuffled-label refits beat it), but the 80% interval is roughly +/-70 days, and every vehicle's last visit is right-censored, so predictions are clamped to today rather than fitted with a proper survival model.",
+    "The bundled visit lookup table was trained on PUB-01 only. On any other workshop the offline path falls back to the fleet median and says so, because per-vehicle curves differ by more than the model's own error and reusing one case's curve on another would be a confident wrong answer.",
+    "The model service runs behind a free-tier ngrok tunnel whose URL changes on every restart; when it is stale the app silently uses the committed table, which is visible in the UI as 'offline model'.",
+    "There is no edit or delete for customers, vehicles or service items, and no onboarding flow for a brand-new empty workshop — a newly registered account has no book to open.",
+    "Verification is assert-based self-checks (src/lib/engine-check.ts, src/lib/visit-check.ts) run manually, not a test framework suite wired into CI.",
+    "ml/ (the trainer and the FastAPI service) and src/lib/visit-check.ts are present in the working tree but not yet committed, so the ML pipeline is not reproducible from the repository as it stands.",
+    "LICENSES.md is referenced below but has not been written yet."
+  ],
+  "ai_tools_used": [
+    {
+      "tool": "Claude Code",
+      "used_for": "Reconciling the Prisma schema with the already-seeded database; the case assembly and write layer; the API routes; the dashboard UI ported from a hand-authored design mockup; walk-in customer and vehicle intake; per-account workshop scoping; and wiring the visit-prediction endpoint into the UI.",
+      "how_output_was_verified": "src/lib/engine-check.ts reproduces the documented PUB-01 answers (top-6 call-list scores, 45-job / 387,700 backlog, eight weekly buckets) from both the JSON fixture and the database-assembled case, so any drift surfaces as a wrong number. `prisma migrate diff` was used to confirm the schema matches the live database with an empty diff in both directions. Each feature was then exercised in a real browser against the running app — intake, recording a service, the odometer update, search and the visit prediction — and checked against the database rows and the /api/run response rather than assumed. `npx tsc --noEmit`, `npx biome check` and `npx next build` pass."
+    }
+  ],
+  "licenses_file": "LICENSES.md",
+  "declaration": "The information above is complete and truthful to the best of the team's knowledge."
+}
