@@ -1,0 +1,220 @@
+/*
+ * Landing page only. Every value here is a token from due-book.css — this file
+ * adds layout the dashboard has no use for (a hero scale, two-column feature
+ * rows), never a second palette or a second type system.
+ */
+
+html {
+  scroll-behavior: smooth;
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+.duebook {
+  .lp-bar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+  }
+  .lp-bar-in {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .lp {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 20px 88px;
+  }
+  .lp section {
+    padding: 64px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .lp section:last-child {
+    border-bottom: 0;
+  }
+
+  /* hero */
+  .lp section.lp-hero {
+    padding: 84px 0 68px;
+  }
+  .lp-hero h1 {
+    font-size: clamp(30px, 5.2vw, 52px);
+    line-height: 1.06;
+    letter-spacing: -0.025em;
+    font-variation-settings: "wdth" 92;
+    max-width: 17ch;
+  }
+  .lp-hero .lede {
+    margin-top: 18px;
+    font-size: clamp(15px, 1.6vw, 18px);
+    line-height: 1.6;
+    color: var(--ink-2);
+    max-width: 60ch;
+  }
+  .lp-cta {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 26px;
+  }
+  .lp-cta .btn {
+    padding: 10px 18px;
+    font-size: 14px;
+  }
+  .lp-note {
+    margin-top: 16px;
+    font-size: 12px;
+    color: var(--ink-3);
+  }
+
+  /* section headings */
+  .lp h2 {
+    font-size: clamp(21px, 2.6vw, 27px);
+    letter-spacing: -0.02em;
+    font-variation-settings: "wdth" 92;
+    max-width: 22ch;
+  }
+  .lp .sub {
+    margin-top: 10px;
+    font-size: 14.5px;
+    line-height: 1.62;
+    color: var(--ink-2);
+    max-width: 66ch;
+  }
+
+  /* rule cards */
+  .lp-rules {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(268px, 1fr));
+    gap: 14px;
+    margin-top: 28px;
+  }
+  .lp-rule {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 16px 17px;
+  }
+  .lp-rule h3 {
+    font-size: 15px;
+    margin-bottom: 3px;
+  }
+  .lp-rule .item {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-3);
+  }
+  .lp-rule .says {
+    margin-top: 12px;
+    padding-top: 11px;
+    border-top: 1px solid var(--line);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--ink-2);
+  }
+
+  /* two-column: screenshot beside arithmetic */
+  .lp-split {
+    display: grid;
+    grid-template-columns: 1.35fr 1fr;
+    gap: 26px;
+    align-items: start;
+    margin-top: 28px;
+  }
+  .lp-shot {
+    border: 1px solid var(--line-2);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    background: var(--surface);
+    line-height: 0;
+  }
+  .lp-shot img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .lp-shot .shot-dark {
+    display: none;
+  }
+  .lp-caption {
+    margin-top: 9px;
+    font-size: 12px;
+    color: var(--ink-3);
+  }
+
+  /* honest list */
+  .lp-nots {
+    list-style: none;
+    margin: 26px 0 0;
+    padding: 0;
+    display: grid;
+    /* fixed 2-up so four items make a full 2x2 with no dead cell */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .lp-nots li {
+    background: var(--surface);
+    padding: 15px 16px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--ink-2);
+  }
+  .lp-nots b {
+    color: var(--ink);
+    display: block;
+    margin-bottom: 3px;
+    font-size: 13.5px;
+  }
+
+  .lp-foot {
+    padding: 26px 0 0;
+    font-size: 12px;
+    color: var(--ink-3);
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 860px) {
+    .lp-split {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 720px) {
+    .lp-nots {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 620px) {
+    .lp section {
+      padding: 44px 0;
+    }
+    .lp section.lp-hero {
+      padding: 56px 0 44px;
+    }
+  }
+}
+
+.dark .duebook .lp-shot .shot-light {
+  display: none;
+}
+.dark .duebook .lp-shot .shot-dark {
+  display: block;
+}
