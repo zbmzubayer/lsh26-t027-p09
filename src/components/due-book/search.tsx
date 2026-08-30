@@ -4,7 +4,13 @@ import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import type { Analysis, VehicleView } from "@/lib/due-book-view";
 import type { VisitPrediction } from "@/lib/visit";
+import { DetailDrawer } from "./detail-drawer";
 import { Chip, km, Plate, tk, tkS, WhatsAppButton } from "./format";
+import {
+  VehicleSummary,
+  VehicleSummaryActions,
+  VehicleSummarySubtitle,
+} from "./vehicle-summary";
 
 interface VisitResponse {
   source: "live" | "bundled";
@@ -38,6 +44,10 @@ export function Search({
   reminderText: (ownerId: string) => string;
 }) {
   const [q, setQ] = useState("");
+  // a search hit opens in place rather than navigating away: you are usually
+  // mid-call, and losing the result list to answer one question is the wrong
+  // trade
+  const [openId, setOpenId] = useState<string | null>(null);
   const [visits, setVisits] = useState<
     Record<string, { source: string; note?: string; rows: VisitPrediction[] }>
   >({});
@@ -84,6 +94,14 @@ export function Search({
       return hay.includes(term);
     })
     .sort((x, y) => x.owner.name.localeCompare(y.owner.name));
+
+  const openVehicleView =
+    a.vehicles.find((v) => v.vehicle.id === openId) ?? null;
+  const openPrediction = openVehicleView
+    ? (Object.values(visits)
+        .flatMap((x) => x.rows)
+        .find((r) => r.vehicleId === openVehicleView.vehicle.id) ?? null)
+    : null;
 
   return (
     <div className="panel">
@@ -186,10 +204,14 @@ export function Search({
                         <tr
                           key={v.vehicle.id}
                           className={`callrow stripe ${v.worst}`}
-                          onClick={() => onOpenVehicle(v.vehicle.id)}
+                          onClick={() => setOpenId(v.vehicle.id)}
                           tabIndex={0}
+                          aria-haspopup="dialog"
                           onKeyDown={(e) => {
-                            if (e.key === "Enter") onOpenVehicle(v.vehicle.id);
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              setOpenId(v.vehicle.id);
+                            }
                           }}
                         >
                           <td>
@@ -290,6 +312,28 @@ export function Search({
             </div>
           );
         })}
+
+        {openVehicleView && (
+          <DetailDrawer
+            open={openId !== null}
+            onOpenChange={(o) => !o && setOpenId(null)}
+            eyebrow={`${openVehicleView.vehicle.id} · ${openVehicleView.vehicle.model}`}
+            title={openVehicleView.vehicle.model}
+            subtitle={<VehicleSummarySubtitle v={openVehicleView} />}
+            footer={
+              <VehicleSummaryActions
+                v={openVehicleView}
+                reminderText={reminderText}
+                onOpenVehicle={(id) => {
+                  setOpenId(null);
+                  onOpenVehicle(id);
+                }}
+              />
+            }
+          >
+            <VehicleSummary v={openVehicleView} prediction={openPrediction} />
+          </DetailDrawer>
+        )}
 
         {visit.isError && (
           <output className="flash bad">

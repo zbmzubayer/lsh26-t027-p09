@@ -405,6 +405,31 @@ export function DueBook({
                 </button>
               </div>
             </fieldset>
+            <fieldset className="opt">
+              <legend title="Rank by the calls that change an outcome: weight each row by how unlikely the owner is to arrive unprompted.">
+                Who won&apos;t come on their own
+              </legend>
+              <div className="seg">
+                <button
+                  type="button"
+                  aria-pressed={opts.returnWeighting}
+                  onClick={() =>
+                    setOpts((o) => ({ ...o, returnWeighting: true }))
+                  }
+                >
+                  Weight
+                </button>
+                <button
+                  type="button"
+                  aria-pressed={!opts.returnWeighting}
+                  onClick={() =>
+                    setOpts((o) => ({ ...o, returnWeighting: false }))
+                  }
+                >
+                  Off
+                </button>
+              </div>
+            </fieldset>
             <div className="opt" style={{ marginLeft: "auto" }}>
               <span
                 className="num"

@@ -72,11 +72,18 @@ export interface EngineOpts {
   kmBasis: "span" | "last-two";
   /** Whether safety/legal items get the 1.5x bump. */
   riskWeights: boolean;
+  /**
+   * Weight each row by how unlikely the owner is to arrive unprompted, so the
+   * list ranks the calls that change an outcome above the customers who walk in
+   * anyway. Off by default: every published number is measured without it.
+   */
+  returnWeighting: boolean;
 }
 export const DEFAULT_OPTS: EngineOpts = {
   dueSoonDays: DUE_SOON_DAYS,
   kmBasis: "span",
   riskWeights: true,
+  returnWeighting: false,
 };
 
 export interface ItemStatus {
@@ -97,12 +104,12 @@ const sortedReadings = (v: Vehicle) =>
 
 export const currentKm = (v: Vehicle) => sortedReadings(v).at(-1)?.km ?? 0;
 
-/** Average km/day over the vehicle's readings; 0 means no usage. */
-export function kmPerDay(
-  v: Vehicle,
+/** Average km/day over a set of readings; the fleet median when there is no span. */
+export function rateOver(
+  readings: OdoReading[],
   basis: EngineOpts["kmBasis"] = "span",
 ): number {
-  const r = sortedReadings(v);
+  const r = [...readings].sort((a, b) => a.date.localeCompare(b.date));
   const first = basis === "last-two" ? r.at(-2) : r[0];
   const last = r.at(-1);
   if (!first || !last || first === last) return FLEET_MEDIAN_KM_PER_DAY;
@@ -112,6 +119,71 @@ export function kmPerDay(
   );
   if (days <= 0) return FLEET_MEDIAN_KM_PER_DAY;
   return (last.km - first.km) / days;
+}
+
+/** Average km/day over the vehicle's readings; 0 means no usage. */
+export const kmPerDay = (v: Vehicle, basis: EngineOpts["kmBasis"] = "span") =>
+  rateOver(v.odometer_readings, basis);
+
+/**
+ * Floor on the implied rate a reading may carry, so a genuine long drive is not
+ * refused on a car that normally sits in Dhaka traffic.
+ */
+export const MAX_IMPLIED_KM_PER_DAY = 300;
+
+/**
+ * Why a proposed odometer reading is not believable, or null if it is.
+ *
+ * A mistyped digit is a silent poison: 101,743 entered as 1,017,430 lands
+ * without complaint, every distance-based estimate on the car recomputes off
+ * it, and nothing anywhere reports an error. The vehicle then reads years
+ * overdue and heads the call list.
+ *
+ * Judged against the vehicle's own history, not a fleet constant: readings
+ * either side of the proposed date must bracket it, and the implied rate since
+ * the previous reading must stay under three times what this car actually runs.
+ */
+// ponytail: 3x the car's own rate, or 300 km/day, whichever is larger. That
+// catches a mistyped digit (>=10x) without refusing a Dhaka-Chittagong run. If
+// the workshop ever takes on highway coaches, make the ceiling per-vehicle.
+export function readingProblem(
+  readings: OdoReading[],
+  date: string,
+  km: number,
+): string | null {
+  if (!Number.isInteger(km) || km < 0)
+    return "a reading must be a whole number of km";
+  // a reading dated the same day replaces rather than appends, so it is not
+  // its own history
+  const others = readings.filter((r) => r.date !== date);
+  const before = others
+    .filter((r) => r.date < date)
+    .sort((a, b) => a.date.localeCompare(b.date));
+  const prior = before.at(-1);
+  const next = others
+    .filter((r) => r.date > date)
+    .sort((a, b) => a.date.localeCompare(b.date))[0];
+
+  if (prior && km < prior.km)
+    return `an odometer does not go backwards: ${num(km)} km is below the ${num(prior.km)} km read on ${prior.date}`;
+  if (next && km > next.km)
+    return `${num(km)} km is above the ${num(next.km)} km already read on ${next.date}`;
+  if (!prior) return null;
+
+  const days = Math.max(
+    1,
+    differenceInCalendarDays(parseISO(date), parseISO(prior.date)),
+  );
+  const implied = (km - prior.km) / days;
+  // Excluding the same-day reading can leave too little to measure a rate from,
+  // and then the message would quote the fleet median at a car whose own
+  // running is known. Judge the value against its neighbours, but estimate the
+  // rate from everything.
+  const usual = rateOver(others.length >= 2 ? others : readings);
+  const ceiling = Math.max(3 * usual, MAX_IMPLIED_KM_PER_DAY);
+  if (implied > ceiling)
+    return `${num(km)} km means ${num(implied)} km/day since ${prior.date} — this car runs about ${usual.toFixed(1)} km/day. Check the reading.`;
+  return null;
 }
 
 /** Latest service_history entry for an item, by date. */
@@ -247,7 +319,13 @@ export interface CallRow {
   score: number;
   worstDaysLeft: number;
   totalCost: number;
-  composition: string; // the arithmetic behind the score, e.g. "Tyres 32,000 × 1.97 × 1.5 = 94,400 + oil 19,250"
+  composition: string;
+  /**
+   * P(this owner does NOT turn up unprompted in the next 30 days), when return
+   * weighting is on. 1 means "assume they will not" — an unknown customer is
+   * one to call, not one to skip.
+   */
+  returnFactor?: number; // the arithmetic behind the score, e.g. "Tyres 32,000 × 1.97 × 1.5 = 94,400 + oil 19,250"
 }
 
 /**
@@ -259,6 +337,12 @@ export function buildCallList(
   data: CaseData,
   sort: CallSort = "score",
   opts: EngineOpts = DEFAULT_OPTS,
+  /**
+   * P(the owner will NOT come on their own), per vehicle. Passed in rather than
+   * imported: this module stays free of I/O and of the model, and the caller
+   * decides where the number comes from. Ignored unless opts.returnWeighting.
+   */
+  wontReturn?: (vehicleId: string) => number,
 ): CallRow[] {
   const rows: CallRow[] = [];
   for (const v of data.vehicles) {
@@ -269,18 +353,29 @@ export function buildCallList(
     const owner = data.owners.find((o) => o.id === v.owner_id);
     if (!owner) continue;
     const lead = due[0];
+    // An unknown customer is one to call, not one to skip, so a missing
+    // probability weighs 1 rather than 0.
+    const factor =
+      opts.returnWeighting && wontReturn ? (wontReturn(v.id) ?? 1) : 1;
+    const raw = due.reduce((sum, s) => sum + s.score, 0);
     const composition = [
       `${lead.item.name} ${num(lead.cost)} × ${lead.urgency.toFixed(2)} × ${lead.risk} = ${num(lead.score)}`,
       ...due.slice(1).map((s) => `+ ${s.item.name} ${num(s.score)}`),
+      ...(factor !== 1
+        ? [
+            `→ × ${factor.toFixed(2)} won't come on their own = ${num(raw * factor)}`,
+          ]
+        : []),
     ].join(" ");
     rows.push({
       owner,
       vehicle: v,
       items: due,
-      score: due.reduce((sum, s) => sum + s.score, 0),
+      score: raw * factor,
       worstDaysLeft: Math.min(...due.map((s) => s.daysLeft)),
       totalCost: due.reduce((sum, s) => sum + s.cost, 0),
       composition,
+      ...(opts.returnWeighting && wontReturn ? { returnFactor: factor } : {}),
     });
   }
   const cmp: Record<CallSort, (a: CallRow, b: CallRow) => number> = {

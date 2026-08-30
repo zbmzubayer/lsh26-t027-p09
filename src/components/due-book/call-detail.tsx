@@ -26,6 +26,13 @@ export function CallDetail({ row }: { row: CallRow }) {
           <div className="v">{tkS(row.totalCost)}</div>
           <div className="n">across {row.items.length} items</div>
         </div>
+        {row.returnFactor != null && (
+          <div className="tile">
+            <div className="k">Won&apos;t come on their own</div>
+            <div className="v">{Math.round(row.returnFactor * 100)}%</div>
+            <div className="n">chance they do not walk in within 30 days</div>
+          </div>
+        )}
         <div className={`tile ${row.worstDaysLeft < 0 ? "crit" : "warn"}`}>
           <div className="k">Worst item</div>
           <div className="v" style={{ fontSize: 17 }}>

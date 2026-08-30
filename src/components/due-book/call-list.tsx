@@ -208,7 +208,22 @@ export function CallList({
                       )}
                     </td>
                     <td className="r money">{tkS(r.totalCost)}</td>
-                    <td className="r score">{tkS(r.score)}</td>
+                    <td className="r score">
+                      {tkS(r.score)}
+                      {r.returnFactor != null && (
+                        <div
+                          className="num"
+                          style={{
+                            fontSize: 10.5,
+                            fontWeight: 400,
+                            color: "var(--ink-3)",
+                          }}
+                          title="Chance the owner does not walk in unprompted within 30 days"
+                        >
+                          {Math.round(r.returnFactor * 100)}% won&apos;t come
+                        </div>
+                      )}
+                    </td>
                   </tr>
                 );
               })}
