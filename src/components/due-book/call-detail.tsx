@@ -9,17 +9,7 @@ import { ItemCards } from "./item-table";
  * why that date, and the arithmetic behind its position. Kept separate from the
  * drawer that presents it so the same block can be dropped anywhere.
  */
-export function CallDetail({
-  row,
-  reminderText,
-  onOpenVehicle,
-  onCopy,
-}: {
-  row: CallRow;
-  reminderText: (ownerId: string) => string;
-  onOpenVehicle: (vehicleId: string) => void;
-  onCopy: (ownerId: string, label: string) => void;
-}) {
+export function CallDetail({ row }: { row: CallRow }) {
   const overdue = row.items.filter((i) => i.status === "overdue").length;
   const soon = row.items.filter((i) => i.status === "due_soon").length;
 
@@ -62,42 +52,57 @@ export function CallDetail({
           lineHeight: 1.6,
         }}
       >
-        This vehicle sits where it does because of the sum in the score column —
-        every flagged item contributes{" "}
+        This vehicle sits where it does because of the scores above — every
+        flagged item contributes{" "}
         <span className="num">cost × urgency × safety weight</span>. Multipliers
         print to two decimals; the ranking carries full precision, so a printed
         line can land a few taka off the total.
       </p>
+    </>
+  );
+}
 
-      <div className="rowacts">
-        <button
-          type="button"
-          className="btn sm primary"
-          onClick={() => onOpenVehicle(row.vehicle.id)}
-        >
-          Open vehicle page
-        </button>
-        <WhatsAppButton
-          small
-          phone={row.owner.phone}
-          text={reminderText(row.owner.id)}
-          label={`WhatsApp ${row.owner.name}`}
-        />
-        <a
-          className="btn sm"
-          href={`tel:${row.owner.phone}`}
-          style={{ textDecoration: "none" }}
-        >
-          Call {row.owner.phone}
-        </a>
-        <button
-          type="button"
-          className="btn sm"
-          onClick={() => onCopy(row.owner.id, "Copy reminder")}
-        >
-          Copy text
-        </button>
-      </div>
+/** Pinned to the drawer footer, so it stays reachable past a long item list. */
+export function CallActions({
+  row,
+  reminderText,
+  onOpenVehicle,
+  onCopy,
+}: {
+  row: CallRow;
+  reminderText: (ownerId: string) => string;
+  onOpenVehicle: (vehicleId: string) => void;
+  onCopy: (ownerId: string, label: string) => void;
+}) {
+  return (
+    <>
+      <button
+        type="button"
+        className="btn sm primary"
+        onClick={() => onOpenVehicle(row.vehicle.id)}
+      >
+        Open vehicle page
+      </button>
+      <WhatsAppButton
+        small
+        phone={row.owner.phone}
+        text={reminderText(row.owner.id)}
+        label={`WhatsApp ${row.owner.name}`}
+      />
+      <a
+        className="btn sm"
+        href={`tel:${row.owner.phone}`}
+        style={{ textDecoration: "none" }}
+      >
+        Call {row.owner.phone}
+      </a>
+      <button
+        type="button"
+        className="btn sm"
+        onClick={() => onCopy(row.owner.id, "Copy reminder")}
+      >
+        Copy text
+      </button>
     </>
   );
 }

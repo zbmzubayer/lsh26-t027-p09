@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { Analysis } from "@/lib/due-book-view";
 import type { CallSort } from "@/lib/engine";
-import { CallDetail, CallDetailSubtitle } from "./call-detail";
+import { CallActions, CallDetail, CallDetailSubtitle } from "./call-detail";
 import { DetailDrawer } from "./detail-drawer";
 import { Chip, daysText, Plate, tk, tkS } from "./format";
 
@@ -227,18 +227,21 @@ export function CallList({
         }
         title={openRow?.owner.name ?? ""}
         subtitle={openRow ? <CallDetailSubtitle row={openRow} /> : null}
+        footer={
+          openRow ? (
+            <CallActions
+              row={openRow}
+              reminderText={reminderText}
+              onCopy={onCopyReminder}
+              onOpenVehicle={(vid) => {
+                setOpenId(null);
+                onOpenVehicle(vid);
+              }}
+            />
+          ) : null
+        }
       >
-        {openRow && (
-          <CallDetail
-            row={openRow}
-            reminderText={reminderText}
-            onCopy={onCopyReminder}
-            onOpenVehicle={(vid) => {
-              setOpenId(null);
-              onOpenVehicle(vid);
-            }}
-          />
-        )}
+        {openRow && <CallDetail row={openRow} />}
       </DetailDrawer>
 
       <p
