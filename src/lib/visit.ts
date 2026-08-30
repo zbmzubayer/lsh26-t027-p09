@@ -1,5 +1,5 @@
 import { addDays, differenceInCalendarDays, format, parseISO } from "date-fns";
-import model from "../data/visit-predictions-pub-01.json";
+import model from "../data/visit-predictions.json";
 import {
   type CaseData,
   DEFAULT_OPTS,
@@ -13,10 +13,12 @@ import {
  *
  * engine.ts answers "when is this item due" — a rule, and in this fixture a
  * deterministic one. It cannot answer "when will the customer actually turn
- * up", which is the only quantity in PUB-01 that genuinely varies: 56 observed
- * inter-visit gaps, mean 100 days, sd 71. A random forest fitted on those gaps
- * (ml/visit_model.py) beats "always guess the fleet median" by 12 days of MAE
- * under leave-one-vehicle-out CV, and 0 of 12 shuffled-label refits matched it.
+ * up", which is the only quantity in these cases that genuinely varies — every
+ * cost, interval and km/day in them is a constant. A random forest fitted on
+ * the 1,549 observed inter-visit gaps across all 25 workshops in the database
+ * (ml/visit_model.py) beats "always guess the fleet median" by 21 days of MAE
+ * under leave-one-CASE-out CV — scored on a workshop it has never seen — and
+ * 0 of 12 shuffled-label refits matched it.
  *
  * The model ships as a lookup table — a predicted gap for each of the twelve
  * months — so recording a service re-predicts through an array index and no
@@ -24,17 +26,27 @@ import {
  */
 
 export interface VisitModel {
-  case_id: string;
+  source: string;
   metrics: {
     n_gaps: number;
+    n_cases: number;
     cv: string;
+    max_depth: number;
     baseline_mae_days: number;
     model_mae_days: number;
     permuted_mae_days: number;
     permutations_beating_model: number;
   };
   interval_days: { p10: number; p90: number };
-  vehicles: Record<string, { last_visit: string; gap_by_month: number[] }>;
+  /**
+   * Keyed by case first: vehicle ids are only unique within a case, so `V01`
+   * exists in all 25 of them. Flattening this would silently hand one workshop
+   * another workshop's prediction.
+   */
+  cases: Record<
+    string,
+    Record<string, { last_visit: string; gap_by_month: number[] }>
+  >;
 }
 
 export const VISIT_MODEL = model as VisitModel;
@@ -124,32 +136,32 @@ export function joinPrediction(
 /**
  * Prediction from the bundled lookup table. No network, always available.
  *
- * `caseId` scopes the lookup. The table is keyed by bare vehicle id ("V01"),
- * but ids repeat across the 25 cases — PUB-02's V01 is a different car from
- * PUB-01's. The per-vehicle curves differ by 55-94 days for the same month,
- * more than the model's own 46-day MAE, so reusing one case's curve on another
- * is not a small error. When the model was not trained on this case we drop to
- * the fleet median and say so, rather than showing a confident wrong date.
+ * `caseId` scopes the lookup, and is not optional. Vehicle ids are unique only
+ * within a case — PUB-02's V01 is a different car from PUB-01's — and the
+ * per-vehicle curves differ by more than the model's own MAE, so serving one
+ * workshop another workshop's curve is not a rounding error. A workshop the
+ * model has never been trained on drops to the fleet median and says so, rather
+ * than showing a confident wrong date.
  */
 export function predictVisit(
   v: Vehicle,
   today: string,
+  caseId: string,
   opts: EngineOpts = DEFAULT_OPTS,
   m: VisitModel = VISIT_MODEL,
-  caseId?: string,
 ): VisitPrediction {
   const lastVisit = lastVisitOf(v);
-  const sameCase = caseId === undefined || caseId === m.case_id;
-  const row = sameCase ? m.vehicles[v.id] : undefined;
+  const known = m.cases[caseId];
+  const row = known?.[v.id];
   const gap =
     lastVisit && row
       ? row.gap_by_month[parseISO(lastVisit).getMonth()]
       : FALLBACK_GAP_DAYS;
-  const basis = !sameCase
-    ? `fleet median — the bundled model was trained on ${m.case_id}, not this workshop`
+  const basis = !known
+    ? `fleet median — ${caseId} was not in the model's training set`
     : lastVisit && row
       ? `bundled model, last visit ${lastVisit}`
-      : "fleet median";
+      : "fleet median — no service history for this vehicle";
   return joinPrediction(v, today, gap, basis, opts, m);
 }
 
@@ -163,7 +175,7 @@ export function driftList(
   m: VisitModel = VISIT_MODEL,
 ): VisitPrediction[] {
   return data.vehicles
-    .map((v) => predictVisit(v, data.today, opts, m, data.case_id))
+    .map((v) => predictVisit(v, data.today, data.case_id, opts, m))
     .filter((p) => p.willDrift)
     .sort((a, b) => b.driftDays - a.driftDays);
 }

@@ -101,7 +101,7 @@ export async function POST(request: Request) {
       const hit = gaps?.get(v.id);
       return hit
         ? joinPrediction(v, data.today, hit.gap, hit.basis)
-        : predictVisit(v, data.today, undefined, VISIT_MODEL, data.case_id);
+        : predictVisit(v, data.today, data.case_id);
     });
 
     return NextResponse.json({

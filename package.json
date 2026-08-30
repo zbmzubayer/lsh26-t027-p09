@@ -11,7 +11,11 @@
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
-    "prepare": "husky"
+    "prepare": "husky",
+    "ml": "uv run --with-requirements ml/requirements.txt python ml/visit_model.py",
+    "check:visit": "tsx src/lib/visit-check.ts",
+    "ml:serve": "uv run --with-requirements ml/requirements.txt uvicorn serve:app --app-dir ml --host 127.0.0.1 --port 8010",
+    "ml:export": "tsx ml/export-cases.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
