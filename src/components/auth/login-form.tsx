@@ -18,7 +18,10 @@ export function LoginForm() {
   const router = useRouter();
   const form = useForm<LoginDto>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: "", password: "" },
+    defaultValues: {
+      email: "zbm.abir148025@gmail.com",
+      password: "zbm.abir148025@gmail.com",
+    },
   });
 
   const { mutateAsync, error } = useMutation({
